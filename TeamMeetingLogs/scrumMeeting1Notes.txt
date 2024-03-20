@@ -1,0 +1,45 @@
+meeting notes:
+
+must be on time
+
+do lab 9
+
+have stable comm channel. Use discord.
+
+TODO Come up with app name, team name, vision statement.
+
+TODO draw use case diagrams. (draw.io, ms paint) - consider senarios from the end user
+
+TODO build wireframes (join all the pages and build them loosly before working (lucid charts)
+
+TODO feature list - have a few features that work and lots that dont (at least come up with a list of features) 
+create project board with epics and user stories (story points - estimates for finishing time
+
+TODO database design (create specifinic (what kind, how to store, the scema of the table, primary and forign keys (can use epics and stories for this)))
+
+TODO segragate front and back end team
+
+
+LAB 10 below
+
+epics - broad function
+
+stories - the things that get the function done (the most independent a task can be)
+
+tasks will be picked up by the project board (github project board)
+
+
+EXTRA STUFF
+
+upload meeting logs and team documents
+
+update logs and things to the team doc frequently 
+
+meeting logs go in specific place in repo
+
+google doc (team doc) share with Shipra
+
+No meeting week of 3/25
+
+not expected to do stuff during spring break
+
