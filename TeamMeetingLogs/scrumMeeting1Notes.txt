@@ -43,3 +43,25 @@ No meeting week of 3/25
 
 not expected to do stuff during spring break
 
+
+4/2/2024 Scrum meeting
+
+This week is implementation of the unit test
+
+Have different variety of API's implementation this week
+
+Divide the workload evenly
+
+Focus on the directory structure, example in project overview, will help with changes and where to add the code
+
+Have atleast one feature done this week, so she can leave feedback. Needs to see a basic framework
+
+Advice: Work on back end and front end simultaneously so we arent wating for anything
+
+Focus on picking up tasks from the board and getting the login and register page done
+and one basic functinality and work on unit tests, 2 of them are on the login api
+Write another two unit tests for an api thats not for login/register
+
+By next week, have something that she can see
+
+Have the unit tests done by next Tuesday so she can see the base features and stuff
