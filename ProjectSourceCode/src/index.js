@@ -77,13 +77,23 @@ app.use(
 
 // TODO - Include your API routes here
 
+//API default welcome test
 app.get('/welcome', (req, res) => 
     {
-        res.status(200)
+        res.status(200),
         res.json({message: 'Welcome!', status: 'success'})
     });
 
+//API to load login page
+app.get('/', (req, res) => 
+{
+    res.render('pages/login'); //this will call the /anotherRoute route in the API
+});
 
+app.get('/register', (req, res) => 
+{
+    res.render('pages/register'); //this will call the /anotherRoute route in the API
+});
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
