@@ -87,13 +87,68 @@ app.get('/welcome', (req, res) =>
 //API to load login page
 app.get('/', (req, res) => 
 {
-    res.render('pages/login'); //this will call the /anotherRoute route in the API
+    res.render('pages/home'); //this will call the /anotherRoute route in the API
 });
 
 app.get('/register', (req, res) => 
 {
     res.render('pages/register'); //this will call the /anotherRoute route in the API
 });
+
+app.get('/login', (req, res) => 
+    {
+        res.render('pages/login'); //this will call the /anotherRoute route in the API
+    });
+
+    // Register
+// app.post('/register', async (req, res) => {
+//   //hash the password using bcrypt library
+//   const hash = await bcrypt.hash(req.body.password, 10);
+
+//   // To-DO: Insert username and hashed password into the 'users' table
+//   db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
+//   .then(() => {
+//     res.redirect('/login');
+//   }
+//   )
+//   .catch(err => {
+//     res.redirect('/register');
+//   });
+// });
+
+// app.get('/discover', auth, (req, res) => 
+//     {
+//       // console.log('inside discover redirect');
+
+     
+//       // // Authentication Required
+//       // app.use(auth);
+
+//       axios({
+//         url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/2023-01-09?adjusted=true&apiKey=m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ`,
+//         method: 'GET',
+//         dataType: 'json',
+//         headers: {
+//           'Accept-Encoding': 'application/json',
+//         },
+//         params: {
+//           apikey: process.env.API_KEY,
+//           keyword: 'Red Rocks Amphitheatre', //you can choose any artist/event here
+//           size: undefined // you can choose the number of events you would like to return
+//         },
+//       })
+//         .then(results => {
+//           // console.log('after axios then');
+          
+//           console.log(results.data._embedded.events[0].images); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+//         })
+//         .catch(error => {
+//           // Handle errors
+//           // console.log('after axios catch');
+//           res.render('pages/discover', 
+//             { events: [], message: 'API Call failed' });
+//         });
+//     });
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
