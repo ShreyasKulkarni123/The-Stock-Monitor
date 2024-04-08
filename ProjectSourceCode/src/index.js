@@ -97,18 +97,28 @@ app.get('/login', (req, res) => {
 });
 
 // Register
-// app.post('/register', async (req, res) => {
-//   //hash the password using bcrypt library
-//   const hash = await bcrypt.hash(req.body.password, 10);
+app.post('/register', async (req, res) => {
+  //hash the password using bcrypt library
+  const hash = await bcrypt.hash(req.body.password, 10);
 
-//   // To-DO: Insert username and hashed password into the 'users' table
-//   db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
+  // TODO: Insert username and hashed password into the 'users' table
+  db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
+  .then(() => {
+    res.redirect('/login');
+  })
+  .catch(err => {
+    res.redirect('/register');
+  });
+});
+
+// // TODO: login
+// app.post('/login', async (req, res) => {
+//   db.
 //   .then(() => {
-//     res.redirect('/login');
-//   }
-//   )
+//     res.redirect('/');
+//   })
 //   .catch(err => {
-//     res.redirect('/register');
+//     res.redirect('/login');
 //   });
 // });
 
