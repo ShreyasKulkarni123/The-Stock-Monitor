@@ -78,29 +78,25 @@ app.use(
 // TODO - Include your API routes here
 
 //API default welcome test
-app.get('/welcome', (req, res) => 
-    {
-        res.status(200),
-        res.json({message: 'Welcome!', status: 'success'})
-    });
+app.get('/welcome', (req, res) => {
+  res.status(200),
+    res.json({ message: 'Welcome!', status: 'success' })
+});
 
 //API to load login page
-app.get('/', (req, res) => 
-{
-    res.render('pages/home'); //this will call the /anotherRoute route in the API
+app.get('/', (req, res) => {
+  res.render('pages/home'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/register', (req, res) => 
-{
-    res.render('pages/register'); //this will call the /anotherRoute route in the API
+app.get('/register', (req, res) => {
+  res.render('pages/register'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/login', (req, res) => 
-    {
-        res.render('pages/login'); //this will call the /anotherRoute route in the API
-    });
+app.get('/login', (req, res) => {
+  res.render('pages/login'); //this will call the /anotherRoute route in the API
+});
 
-    // Register
+// Register
 // app.post('/register', async (req, res) => {
 //   //hash the password using bcrypt library
 //   const hash = await bcrypt.hash(req.body.password, 10);
@@ -120,7 +116,7 @@ app.get('/login', (req, res) =>
 //     {
 //       // console.log('inside discover redirect');
 
-     
+
 //       // // Authentication Required
 //       // app.use(auth);
 
@@ -139,7 +135,7 @@ app.get('/login', (req, res) =>
 //       })
 //         .then(results => {
 //           // console.log('after axios then');
-          
+
 //           console.log(results.data._embedded.events[0].images); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
 //         })
 //         .catch(error => {

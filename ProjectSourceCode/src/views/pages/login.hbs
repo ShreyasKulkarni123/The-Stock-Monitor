@@ -1,23 +1,23 @@
 {{> message}}
-<div class="container-fluid mt-4 mx-auto" >
+<div class="container-fluid mt-4 mx-auto">
     <div class="row">
         <!-- aligns the text written to the farthest left -->
         <div class="mx-auto p-2" style="width: auto;">
 
-                    <h2>Login</h2>
-                    <form method="POST" action="/login">
-                        <div class="form-group col-xs-4 col-md-4">
-                            <label for="username" class="control-label">Username</label>
-                            <input type="text" name="username" class="form-control" style="width: auto;"> 
-                        </div>
-                            
-                        <div class="form-group col-xs-4 col-md-4">
-                            <label for="password" class="control-label">Password</label>
-                            <input type="password" name="password" class="form-control" style="width: auto;">
-                        </div>
-                        <button class="btn btn-primary" type="submit">Login</button>
-                    </form>
-                    <p>Don't have an account? <a href="/register">Register</a></p>
+            <h2>Login</h2>
+            <form method="POST" action="/login">
+                <div class="form-group col-xs-4 col-md-4">
+                    <label for="username" class="control-label">Username</label>
+                    <input type="text" name="username" class="form-control" style="width: auto;">
+                </div>
+
+                <div class="form-group col-xs-4 col-md-4">
+                    <label for="password" class="control-label">Password</label>
+                    <input type="password" name="password" class="form-control" style="width: auto;">
+                </div>
+                <button class="btn btn-primary" type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="/register">Register</a></p>
 
         </div>
     </div>
