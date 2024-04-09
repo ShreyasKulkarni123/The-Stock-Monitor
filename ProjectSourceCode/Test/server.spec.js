@@ -29,4 +29,45 @@ describe('Server!', () => {
 
 // *********************** TODO: WRITE 2 UNIT TESTCASES **************************
 
-// ********************************************************************************
+describe('Register', () => {
+  it('Registers a new user', done => {
+    const newUser = {
+      username: 'Willy Wonka',
+      password: 'test',
+    };
+
+    chai
+      .request(server)
+      .post('/register')
+      .send(newUser)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.status).to.equals('success');
+        assert.strictEqual(res.body.message, 'User registered successfully');
+        done();
+      });
+  });
+});
+
+describe('Login', () => {
+  it('Logs in an existing user', done => {
+    const credentials = {
+      username: 'bob',
+      password: 'password2'
+    };
+
+    chai
+      .request(server)
+      .post('/login')
+      .send(credentials)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.status).to.equals('success');
+        assert.strictEqual(res.body.message, 'User logged in successfully');
+        done();
+      });
+  });
+});
+
+
+// *********************** TODO: WRITE 2 UNIT TESTCASES ABOUT A NEW FEATURE **************************
