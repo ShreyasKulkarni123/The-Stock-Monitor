@@ -1,0 +1,16 @@
+The three features and how they will be tested. 
+
+Watchlist: A specific scenario would be when the user is adding a stock to the watchlist. The data will be the symbol of the
+stock as well as the username of the user so it can be added to their watchlist. The test data will be a temporary user and
+an arbitrary company, such as Apple. It will be done on the local system on one/all of the project member's laptops. 
+The results should be that the stock would be added to the watchlist page, and it is in the database with all of the data recorded.
+
+
+Navbar: This navbar will be used to navigate the different pages, such as the watchlist to the browse menu. The user activity will
+be if the user needs to access a different page than the current one, then they would use the navbar. There will be no data being used
+as this feature does not directly affect the user, and will remain static across all user expierences. The result of this test will be
+that the user can navigate to different pages successfully without running into issues in the background. 
+
+About Page: The about page will be used to inform the users about the company. The data that will be used within this test will be the 
+company stock symbol because that is what is needed to get the description about the company. It will be tested on the local system of
+one/all of the project member's laptops. The result will be either a new page or a little pop-up giving a description about the company.
