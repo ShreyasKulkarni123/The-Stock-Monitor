@@ -12,11 +12,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
-const yahooFinance = require('yahoo-finance2').default; // To make HTTP requests from our server. We'll learn more about it in Part C.
-
-yahooFinance.search('AAPL', {}).then((result) => {
-  console.log(result);
-});
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -79,9 +74,11 @@ app.use(
 // <!-- Section 4 : Global Variables
 // *****************************************************
 
-let today = new Date().toISOString().slice(0, 10)
-
-console.log(today)
+// getting yesterdays date for calling information from the polygon API
+// need yesterdays date in order to get the most recent information for the stocks 
+let yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+yesterday = yesterday.toISOString().split('T')[0];
 
 // *****************************************************
 // <!-- Section 5 : API Routes -->
@@ -99,7 +96,7 @@ app.get('/welcome', (req, res) =>
 //API to load login page
 app.get('/', (req, res) => 
 {
-    res.render('pages/home'); //this will call the /anotherRoute route in the API
+    res.render('pages/login'); //this will call the /anotherRoute route in the API
 });
 
 app.get('/register', (req, res) => 
@@ -144,7 +141,7 @@ app.post('/login', async (req, res) => {
       //save user details in session like in lab 7
       req.session.username = username;
       req.session.save();
-      res.redirect('/discover')
+      res.redirect('/home')
       // console.log('inside match AFTER discover redirect');
     }
     else
@@ -184,15 +181,17 @@ app.get('/home', auth, (req, res) =>
       // app.use(auth);
 
       axios({
-        url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/`,
+        url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/2024-04-10?adjusted=true&include_otc=false&apiKey=m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ`,
         method: 'GET',
         dataType: 'json',
-        headers: {
-          Authorization: m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ,
-        },
-        params: {
-          date: today,
-        },
+        // headers: {
+        //   Authorization: 'Bearer m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ',
+        // },
+        // params: {
+        //   date: yesterday,
+        //   adjusted: false,
+        //   include_otc: false,
+        // },
       })
         .then(results => {
           console.log('after axios then');
@@ -203,8 +202,8 @@ app.get('/home', auth, (req, res) =>
         .catch(error => {
           // Handle errors
           console.log('after axios catch',error);
-          res.render('pages/discover', 
-            { events: [], message: 'API Call failed' });
+          res.render('pages/home', 
+            { stocks: [], message: 'API Call failed' });
         });
     });
 
