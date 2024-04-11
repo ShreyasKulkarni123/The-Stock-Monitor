@@ -1,0 +1,6 @@
+Meeting Notes:
+
+Implement the yahoo web scraper/api. 
+
+Make sure that the core functionalities are implemented by the end of the week. 
+
