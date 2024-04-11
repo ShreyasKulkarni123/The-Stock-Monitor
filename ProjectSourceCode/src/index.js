@@ -85,16 +85,12 @@ app.use(
 //API default welcome test
 app.get('/welcome', (req, res) => {
   res.status(200),
-  res.json({ message: 'Welcome!', status: 'success' })
+    res.json({ message: 'Welcome!', status: 'success' })
 });
 
 //API to load login page
 app.get('/', async (req, res) => {
-
-  
-
-  res.render('pages/home'); //this will call the /anotherRoute route in the API
-  
+  res.render('pages/home'); //this will call the /anotherRoute route in the API 
 });
 
 app.get('/register', (req, res) => {
@@ -107,30 +103,39 @@ app.get('/login', (req, res) => {
 
 // Register
 app.post('/register', async (req, res) => {
-  //hash the password using bcrypt library
-  const hash = await bcrypt.hash(req.body.password, 10);
-
   // TODO: Insert username and hashed password into the 'users' table
-  db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
-  .then(() => {
+  try {
+    const hash = await bcrypt.hash(req.body.password, 10);
+    await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash]);
     res.redirect('/login');
-  })
-  .catch(err => {
+  }
+  catch (error) {
+    console.error('Registration error:', error);
     res.redirect('/register');
-  });
+  }
 });
 
-// TODO: login
+// Login
 app.post('/login', async (req, res) => {
-  db.then(() => {
-    res.redirect('/');
-  })
-  .catch(err => {
-    res.redirect('/login');
-  });
+  try {
+    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', req.body.username);
+    if (user && await bcrypt.compare(req.body.password, user.password)) {
+      //save user details in session like in lab 7
+      req.session.user = { username: user.username };
+      req.session.save();
+      res.redirect('/discover');
+    }
+    else {
+      res.render('pages/login', { message: "Incorrect username or password", error: true });
+    }
+  }
+  catch (error) {
+    console.error('Login error:', error);
+    res.render('pages/login', { message: "ERROR", error: true });
+  }
 });
 
-// search
+// Search
 app.get('/search', (req, res) => {
   yahooFinance.search(req.query.symbol, {}).then((result) => {
     console.log(result);
