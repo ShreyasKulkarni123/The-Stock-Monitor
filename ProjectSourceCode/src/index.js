@@ -87,197 +87,133 @@ yesterday = yesterday.toISOString().split('T')[0];
 // TODO - Include your API routes here
 
 //API default welcome test
-<<<<<<< HEAD
-app.get('/welcome', (req, res) => 
-    {
-        res.status(200),
-        res.json({message: 'Welcome!', status: 'success'})
-    });
-
-//API to load login page
-app.get('/', (req, res) => 
-{
-    res.render('pages/login'); //this will call the /anotherRoute route in the API
-=======
 app.get('/welcome', (req, res) => {
   res.status(200),
     res.json({ message: 'Welcome!', status: 'success' })
 });
 
 //API to load login page
-app.get('/', async (req, res) => {
-  res.render('pages/home'); //this will call the /anotherRoute route in the API 
->>>>>>> 74eb71ab4915ce7cc6a5dbd901b74027e4234238
+app.get('/', (req, res) => {
+  res.render('pages/home'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/register', (req, res) => 
-{
-    res.render('pages/register'); //this will call the /anotherRoute route in the API
+app.get('/register', (req, res) => {
+  res.render('pages/register'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/login', (req, res) => 
-    {
-        res.render('pages/login'); //this will call the /anotherRoute route in the API
-    });
+app.get('/login', (req, res) => {
+  res.render('pages/login'); //this will call the /anotherRoute route in the API
+});
 
 // Register
 app.post('/register', async (req, res) => {
-<<<<<<< HEAD
   //hash the password using bcrypt library
   const hash = await bcrypt.hash(req.body.password, 10);
 
-    // To-DO: Insert username and hashed password into the 'users' table
-    db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
+  // To-DO: Insert username and hashed password into the 'users' table
+  db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
     .then(() => {
       res.redirect('/login');
-    }
-    )
+    })
     .catch(err => {
       res.redirect('/register');
     });
 });
 
 app.post('/login', async (req, res) => {
-  
+
   let username = req.body.username;
 
   db.one('SELECT password FROM users WHERE username=$1;', [username])
-  .then(async (users) => {
+    .then(async (users) => {
 
-    // check if password from request matches with password in DB
-    const match = await bcrypt.compare(req.body.password, users.password);
-    
-    if(match)
-    {
-      // console.log('inside match before discover redirect');
-      //save user details in session like in lab 7
-      req.session.username = username;
-      req.session.save();
-      res.redirect('/home')
-      // console.log('inside match AFTER discover redirect');
-    }
-    else
-    {
+      // check if password from request matches with password in DB
+      const match = await bcrypt.compare(req.body.password, users.password);
+
+      if (match) {
+        // console.log('inside match before discover redirect');
+        //save user details in session like in lab 7
+        req.session.username = username;
+        req.session.save();
+        res.redirect('/home')
+        // console.log('inside match AFTER discover redirect');
+      }
+      else {
+        res.render('pages/login',
+          {
+            error: true, // want to put in message "Incorrect username or password."
+            message: 'Incorrect username or password.',
+          });
+      }
+    })
+    .catch(err => {
       res.render('pages/login',
-       {
-        error: true, // want to put in message "Incorrect username or password."
-        message: 'Incorrect username or password.',
-       });
-    }})
-  .catch(err => {
-      res.render('pages/login', 
-      {
-        error: true,
-        message: 'Username not found.',
-      });
-    });
-=======
-  // TODO: Insert username and hashed password into the 'users' table
-  try {
-    const hash = await bcrypt.hash(req.body.password, 10);
-    await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash]);
-    res.redirect('/login');
-  }
-  catch (error) {
-    console.error('Registration error:', error);
-    res.redirect('/register');
-  }
-});
-
-// Login
-app.post('/login', async (req, res) => {
-  try {
-    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', req.body.username);
-    if (user && await bcrypt.compare(req.body.password, user.password)) {
-      //save user details in session like in lab 7
-      req.session.user = { username: user.username };
-      req.session.save();
-      res.redirect('/discover');
-    }
-    else {
-      res.render('pages/login', { message: "Incorrect username or password", error: true });
-    }
-  }
-  catch (error) {
-    console.error('Login error:', error);
-    res.render('pages/login', { message: "ERROR", error: true });
-  }
-});
-
-// Search
-app.get('/search', (req, res) => {
-  yahooFinance.search(req.query.symbol, {}).then((result) => {
-    console.log(result);
-  });
->>>>>>> 74eb71ab4915ce7cc6a5dbd901b74027e4234238
-});
-
- // Authentication Middleware.
- const auth = (req, res, next) => 
-  {
-    // console.log('authenticated');
-    if (!req.session.username) {
-      // Default to login page.
-      return res.redirect('/login');
-    }
-    next();
-  };
-
-app.get('/home', auth, (req, res) => 
-    {
-      // console.log('inside discover redirect');
-
-     
-      // // Authentication Required
-      // app.use(auth);
-
-      axios({
-        url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/2024-04-10?adjusted=true&include_otc=false&apiKey=m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ`,
-        method: 'GET',
-        dataType: 'json',
-        // headers: {
-        //   Authorization: 'Bearer m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ',
-        // },
-        // params: {
-        //   date: yesterday,
-        //   adjusted: false,
-        //   include_otc: false,
-        // },
-      })
-        .then(results => {
-          console.log('after axios then');
-          
-          console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
-          // res.render('pages/discover', { events: results.data._embedded.events });
-        })
-        .catch(error => {
-          // Handle errors
-          console.log('after axios catch',error);
-          res.render('pages/home', 
-            { stocks: [], message: 'API Call failed' });
+        {
+          error: true,
+          message: 'Username not found.',
         });
     });
+});
 
-app.get('/logout', (req, res) => 
-    {   
-        if(req.session.username)
-        {
-          req.session.username = null;
-          req.session.save();
-          if(!req.session.username)
-          {
-            res.render('pages/logout', { message: 'Logged out successfully!' }); //this will call the /anotherRoute route in the API  
-          }
-          else
-          {
-            res.render('pages/logout', { message: 'Logout NOT successful!!' }); //this will call the /anotherRoute route in the API
-          }
-        }
-        else
-        {
-          res.redirect('/login')
-        }
+// Authentication Middleware.
+const auth = (req, res, next) => {
+  // console.log('authenticated');
+  if (!req.session.username) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
+
+app.get('/home', auth, (req, res) => {
+  // console.log('inside discover redirect');
+
+
+  // // Authentication Required
+  // app.use(auth);
+
+  axios({
+    url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/2024-04-10?adjusted=true&include_otc=false&apiKey=m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ`,
+    method: 'GET',
+    dataType: 'json',
+    // headers: {
+    //   Authorization: 'Bearer m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ',
+    // },
+    // params: {
+    //   date: yesterday,
+    //   adjusted: false,
+    //   include_otc: false,
+    // },
+  })
+    .then(results => {
+      console.log('after axios then');
+
+      console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+      // res.render('pages/discover', { events: results.data._embedded.events });
+    })
+    .catch(error => {
+      // Handle errors
+      console.log('after axios catch', error);
+      res.render('pages/home',
+        { stocks: [], message: 'API Call failed' });
     });
+});
+
+app.get('/logout', (req, res) => {
+  if (req.session.username) {
+    req.session.username = null;
+    req.session.save();
+    if (!req.session.username) {
+      res.render('pages/logout', { message: 'Logged out successfully!' }); //this will call the /anotherRoute route in the API  
+    }
+    else {
+      res.render('pages/logout', { message: 'Logout NOT successful!!' }); //this will call the /anotherRoute route in the API
+    }
+  }
+  else {
+    res.redirect('/login')
+  }
+});
 
 // *****************************************************
 // <!-- Section 6 : Start Server-->

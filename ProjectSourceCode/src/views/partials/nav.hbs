@@ -3,13 +3,16 @@
     <div class="navbar-nav">
         {{!-- page links --}}
         <div class="nav-item">
-          <a class="nav-link" href="{{ logged_in ? '/' : '/login' }}" titel="Home">Home</a>
+          {{!-- <a class="nav-link" href="{{ username ? '/' : '/login' }}" titel="Home">Home</a> --}}
+          <a class="nav-link" href="/" titel="Home">Home</a>
         </div>
         <div class="nav-item">
-          <a class="nav-link" href="{{ logged_in ? '/' : '/login' }}" title="Login">Login</a>
+          {{!-- <a class="nav-link" href="{{ username ? '/' : '/login' }}" title="Login">Login</a> --}}
+          <a class="nav-link" href="/login" title="Login">Login</a>
         </div>
         <div class="nav-item">
-          <a class="nav-link" href="{{ logged_in ? '/' : '/register' }}" title="Register">Register</a>
+          {{!-- <a class="nav-link" href="{{ username ? '/' : '/register' }}" title="Register">Register</a> --}}
+          <a class="nav-link" href="/register" title="Register">Register</a>
         </div>
       </div>
       <div class="ml-auto">
