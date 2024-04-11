@@ -114,10 +114,6 @@ app.get('/login', (req, res) =>
 
 // Register
 app.post('/register', async (req, res) => {
-    //hash the password using bcrypt library
-    const hash = await bcrypt.hash(req.body.password, 10);
-// Register
-app.post('/register', async (req, res) => {
   //hash the password using bcrypt library
   const hash = await bcrypt.hash(req.body.password, 10);
 
