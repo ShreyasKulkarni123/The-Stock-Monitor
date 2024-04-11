@@ -87,6 +87,7 @@ yesterday = yesterday.toISOString().split('T')[0];
 // TODO - Include your API routes here
 
 //API default welcome test
+<<<<<<< HEAD
 app.get('/welcome', (req, res) => 
     {
         res.status(200),
@@ -97,6 +98,16 @@ app.get('/welcome', (req, res) =>
 app.get('/', (req, res) => 
 {
     res.render('pages/login'); //this will call the /anotherRoute route in the API
+=======
+app.get('/welcome', (req, res) => {
+  res.status(200),
+    res.json({ message: 'Welcome!', status: 'success' })
+});
+
+//API to load login page
+app.get('/', async (req, res) => {
+  res.render('pages/home'); //this will call the /anotherRoute route in the API 
+>>>>>>> 74eb71ab4915ce7cc6a5dbd901b74027e4234238
 });
 
 app.get('/register', (req, res) => 
@@ -111,6 +122,7 @@ app.get('/login', (req, res) =>
 
 // Register
 app.post('/register', async (req, res) => {
+<<<<<<< HEAD
   //hash the password using bcrypt library
   const hash = await bcrypt.hash(req.body.password, 10);
 
@@ -159,6 +171,45 @@ app.post('/login', async (req, res) => {
         message: 'Username not found.',
       });
     });
+=======
+  // TODO: Insert username and hashed password into the 'users' table
+  try {
+    const hash = await bcrypt.hash(req.body.password, 10);
+    await db.none('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.username, hash]);
+    res.redirect('/login');
+  }
+  catch (error) {
+    console.error('Registration error:', error);
+    res.redirect('/register');
+  }
+});
+
+// Login
+app.post('/login', async (req, res) => {
+  try {
+    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', req.body.username);
+    if (user && await bcrypt.compare(req.body.password, user.password)) {
+      //save user details in session like in lab 7
+      req.session.user = { username: user.username };
+      req.session.save();
+      res.redirect('/discover');
+    }
+    else {
+      res.render('pages/login', { message: "Incorrect username or password", error: true });
+    }
+  }
+  catch (error) {
+    console.error('Login error:', error);
+    res.render('pages/login', { message: "ERROR", error: true });
+  }
+});
+
+// Search
+app.get('/search', (req, res) => {
+  yahooFinance.search(req.query.symbol, {}).then((result) => {
+    console.log(result);
+  });
+>>>>>>> 74eb71ab4915ce7cc6a5dbd901b74027e4234238
 });
 
  // Authentication Middleware.
