@@ -73,6 +73,20 @@ describe('Login', () => {
 // *********************** TODO: WRITE 2 UNIT TESTCASES ABOUT A NEW FEATURE **************************
 describe('Search', () => {
   it('Positive: /search', done => {
+    
+    chai
+      .request(server)
+      .post('/welcome')
+      .send(credentials1)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.status).to.equals('success');
+        assert.strictEqual(res.body.message, 'Welcome page is being displayed');
+        done();
+      });
+  });
+
+  it('Negative: /search', done => {
     const credentials1 = {
       symbol: 'META',
     };
@@ -80,24 +94,10 @@ describe('Search', () => {
     chai
       .request(server)
       .post('/search')
-      .send(credentials1)
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body.status).to.equals('success');
-        assert.strictEqual(res.body.message, 'Company stock found');
-        done();
-      });
-  });
-
-  it('Negative: /welcome', done => {
-
-    chai
-      .request(server)
-      .post('/welcome')
-      .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(404);
         expect(res.body.status).to.equals('error');
-        assert.strictEqual(res.body.message, 'Welcome page not displayed');
+        assert.strictEqual(res.body.message, 'Company stock not found');
         done();
       });
   });

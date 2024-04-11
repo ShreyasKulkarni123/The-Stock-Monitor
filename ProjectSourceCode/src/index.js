@@ -85,7 +85,7 @@ app.use(
 //API default welcome test
 app.get('/welcome', (req, res) => {
   res.status(200),
-    res.json({ message: 'Welcome!', status: 'success' })
+  res.json({ message: 'Welcome!', status: 'success' })
 });
 
 //API to load login page
@@ -120,16 +120,23 @@ app.post('/register', async (req, res) => {
   });
 });
 
-// // TODO: login
-// app.post('/login', async (req, res) => {
-//   db.
-//   .then(() => {
-//     res.redirect('/');
-//   })
-//   .catch(err => {
-//     res.redirect('/login');
-//   });
-// });
+// TODO: login
+app.post('/login', async (req, res) => {
+  db.then(() => {
+    res.redirect('/');
+  })
+  .catch(err => {
+    res.redirect('/login');
+  });
+});
+
+// search
+app.get('/search', (req, res) => {
+  yahooFinance.search(req.query.symbol, {}).then((result) => {
+    console.log(result);
+  });
+});
+
 
 // app.get('/discover', auth, (req, res) => 
 //     {
