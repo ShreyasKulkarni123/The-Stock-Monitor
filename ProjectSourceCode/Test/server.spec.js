@@ -71,8 +71,8 @@ describe('Login', () => {
 
 
 // *********************** TODO: WRITE 2 UNIT TESTCASES ABOUT A NEW FEATURE **************************
-describe('Search', () => {
-  it('Positive: /search', done => {
+describe('Welcome', () => {
+  it('Positive: /welcome', done => {
     
     chai
       .request(server)
@@ -85,7 +85,10 @@ describe('Search', () => {
         done();
       });
   });
+});
 
+
+describe('Search', () => {
   it('Negative: /search', done => {
     const credentials1 = {
       symbol: 'META',
