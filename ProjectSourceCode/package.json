@@ -26,8 +26,5 @@
     "test": "mocha",
     "testandrun": "npm run prestart && npm run test && npm start",
     "run": "npm run prestart && npm start"
-  },
-  {
-
   }
 }
