@@ -75,105 +75,167 @@ app.use(
   })
 );
 
+// *****************************************************
+// <!-- Section 4 : Global Variables
+// *****************************************************
+
+let today = new Date().toISOString().slice(0, 10)
+
+console.log(today)
 
 // *****************************************************
-// <!-- Section 4 : API Routes -->
+// <!-- Section 5 : API Routes -->
 // *****************************************************
 
 // TODO - Include your API routes here
 
 //API default welcome test
-app.get('/welcome', (req, res) => {
-  res.status(200),
-  res.json({ message: 'Welcome!', status: 'success' })
-});
+app.get('/welcome', (req, res) => 
+    {
+        res.status(200),
+        res.json({message: 'Welcome!', status: 'success'})
+    });
 
 //API to load login page
-app.get('/', async (req, res) => {
-
-  
-
-  res.render('pages/home'); //this will call the /anotherRoute route in the API
-  
+app.get('/', (req, res) => 
+{
+    res.render('pages/home'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/register', (req, res) => {
-  res.render('pages/register'); //this will call the /anotherRoute route in the API
+app.get('/register', (req, res) => 
+{
+    res.render('pages/register'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/login', (req, res) => {
-  res.render('pages/login'); //this will call the /anotherRoute route in the API
-});
+app.get('/login', (req, res) => 
+    {
+        res.render('pages/login'); //this will call the /anotherRoute route in the API
+    });
 
+// Register
+app.post('/register', async (req, res) => {
+    //hash the password using bcrypt library
+    const hash = await bcrypt.hash(req.body.password, 10);
 // Register
 app.post('/register', async (req, res) => {
   //hash the password using bcrypt library
   const hash = await bcrypt.hash(req.body.password, 10);
 
-  // TODO: Insert username and hashed password into the 'users' table
-  db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
-  .then(() => {
-    res.redirect('/login');
-  })
-  .catch(err => {
-    res.redirect('/register');
-  });
+    // To-DO: Insert username and hashed password into the 'users' table
+    db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
+    .then(() => {
+      res.redirect('/login');
+    }
+    )
+    .catch(err => {
+      res.redirect('/register');
+    });
 });
 
-// TODO: login
 app.post('/login', async (req, res) => {
-  db.then(() => {
-    res.redirect('/');
-  })
+  
+  let username = req.body.username;
+
+  db.one('SELECT password FROM users WHERE username=$1;', [username])
+  .then(async (users) => {
+
+    // check if password from request matches with password in DB
+    const match = await bcrypt.compare(req.body.password, users.password);
+    
+    if(match)
+    {
+      // console.log('inside match before discover redirect');
+      //save user details in session like in lab 7
+      req.session.username = username;
+      req.session.save();
+      res.redirect('/discover')
+      // console.log('inside match AFTER discover redirect');
+    }
+    else
+    {
+      res.render('pages/login',
+       {
+        error: true, // want to put in message "Incorrect username or password."
+        message: 'Incorrect username or password.',
+       });
+    }})
   .catch(err => {
-    res.redirect('/login');
-  });
+      res.render('pages/login', 
+      {
+        error: true,
+        message: 'Username not found.',
+      });
+    });
 });
 
-// search
-app.get('/search', (req, res) => {
-  yahooFinance.search(req.query.symbol, {}).then((result) => {
-    console.log(result);
-  });
-});
+ // Authentication Middleware.
+ const auth = (req, res, next) => 
+  {
+    // console.log('authenticated');
+    if (!req.session.username) {
+      // Default to login page.
+      return res.redirect('/login');
+    }
+    next();
+  };
 
+app.get('/home', auth, (req, res) => 
+    {
+      // console.log('inside discover redirect');
 
-// app.get('/discover', auth, (req, res) => 
-//     {
-//       // console.log('inside discover redirect');
+     
+      // // Authentication Required
+      // app.use(auth);
 
+      axios({
+        url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/`,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+          Authorization: m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ,
+        },
+        params: {
+          date: today,
+        },
+      })
+        .then(results => {
+          console.log('after axios then');
+          
+          console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+          // res.render('pages/discover', { events: results.data._embedded.events });
+        })
+        .catch(error => {
+          // Handle errors
+          console.log('after axios catch',error);
+          res.render('pages/discover', 
+            { events: [], message: 'API Call failed' });
+        });
+    });
 
-//       // // Authentication Required
-//       // app.use(auth);
+app.get('/logout', (req, res) => 
+    {   
+        if(req.session.username)
+        {
+          req.session.username = null;
+          req.session.save();
+          if(!req.session.username)
+          {
+            res.render('pages/logout', { message: 'Logged out successfully!' }); //this will call the /anotherRoute route in the API  
+          }
+          else
+          {
+            res.render('pages/logout', { message: 'Logout NOT successful!!' }); //this will call the /anotherRoute route in the API
+          }
+        }
+        else
+        {
+          res.redirect('/login')
+        }
+    });
 
-//       axios({
-//         url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/2023-01-09?adjusted=true&apiKey=m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ`,
-//         method: 'GET',
-//         dataType: 'json',
-//         headers: {
-//           'Accept-Encoding': 'application/json',
-//         },
-//         params: {
-//           apikey: process.env.API_KEY,
-//           keyword: 'Red Rocks Amphitheatre', //you can choose any artist/event here
-//           size: undefined // you can choose the number of events you would like to return
-//         },
-//       })
-//         .then(results => {
-//           // console.log('after axios then');
-
-//           console.log(results.data._embedded.events[0].images); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
-//         })
-//         .catch(error => {
-//           // Handle errors
-//           // console.log('after axios catch');
-//           res.render('pages/discover', 
-//             { events: [], message: 'API Call failed' });
-//         });
-//     });
 // *****************************************************
-// <!-- Section 5 : Start Server-->
+// <!-- Section 6 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
-module.exports = app.listen(3000);
+app.listen(3000);
 console.log('Server is listening on port 3000');
