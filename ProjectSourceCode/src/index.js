@@ -2,6 +2,7 @@
 // <!-- Section 1 : Import Dependencies -->
 // *****************************************************
 
+const rest = require('@polygon.io/client-js');
 const express = require('express'); // To build an application server or API
 const app = express();
 const handlebars = require('express-handlebars');
@@ -12,6 +13,9 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
+const { markAsUntransferable } = require('worker_threads');
+const { env } = require('process');
+
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -71,14 +75,21 @@ app.use(
 );
 
 // *****************************************************
-// <!-- Section 4 : Global Variables
+// <!-- Section 4 : Global Variables and functions
 // *****************************************************
 
 // getting yesterdays date for calling information from the polygon API
 // need yesterdays date in order to get the most recent information for the stocks 
 let yesterday = new Date();
-yesterday.setDate(yesterday.getDate() - 1);
+yesterday.setDate(yesterday.getDate() - 2);
 yesterday = yesterday.toISOString().split('T')[0];
+
+let home_url = 'https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/' + yesterday + '?adjusted=true&include_otc=false&apiKey=' + process.env.API_KEY
+// let news_url = 
+// makeURL()
+// {
+
+// }
 
 // *****************************************************
 // <!-- Section 5 : API Routes -->
@@ -87,148 +98,125 @@ yesterday = yesterday.toISOString().split('T')[0];
 // TODO - Include your API routes here
 
 //API default welcome test
-app.get('/welcome', (req, res) => 
-    {
-        res.status(200),
-        res.json({message: 'Welcome!', status: 'success'})
-    });
+app.get('/welcome', (req, res) => {
+  res.status(200),
+    res.json({ message: 'Welcome!', status: 'success' })
+});
 
 //API to load login page
-app.get('/', (req, res) => 
-{
-    res.render('pages/login',{
-      logged_in: false
-    }); //this will call the /anotherRoute route in the API
+app.get('/', (req, res) => {
+  res.render('pages/login'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/register', (req, res) => 
-{
-    res.render('pages/register'); //this will call the /anotherRoute route in the API
+app.get('/register', (req, res) => {
+  res.render('pages/register'); //this will call the /anotherRoute route in the API
 });
 
-app.get('/login', (req, res) => 
-    {
-        res.render('pages/login'); //this will call the /anotherRoute route in the API
-    });
+app.get('/login', (req, res) => {
+  res.render('pages/login'); //this will call the /anotherRoute route in the API
+});
 
 // Register
 app.post('/register', async (req, res) => {
   //hash the password using bcrypt library
   const hash = await bcrypt.hash(req.body.password, 10);
 
-    // To-DO: Insert username and hashed password into the 'users' table
-    db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
+  // To-DO: Insert username and hashed password into the 'users' table
+  db.none('INSERT INTO users (username, password) VALUES ($1, $2);', [req.body.username, hash])
     .then(() => {
       res.redirect('/login');
-    }
-    )
+    })
     .catch(err => {
       res.redirect('/register');
     });
 });
 
 app.post('/login', async (req, res) => {
-  
+
   let username = req.body.username;
 
   db.one('SELECT password FROM users WHERE username=$1;', [username])
-  .then(async (users) => {
+    .then(async (users) => {
 
-    // check if password from request matches with password in DB
-    const match = await bcrypt.compare(req.body.password, users.password);
-    
-    if(match)
-    {
-      // console.log('inside match before discover redirect');
-      //save user details in session like in lab 7
-      req.session.username = username;
-      req.session.save();
-      res.redirect('/home')
-      // console.log('inside match AFTER discover redirect');
-    }
-    else
-    {
+      // check if password from request matches with password in DB
+      const match = await bcrypt.compare(req.body.password, users.password);
+
+      if (match) {
+        // console.log('inside match before discover redirect');
+        //save user details in session like in lab 7
+        req.session.username = username;
+        req.session.save();
+        res.redirect('/home')
+        // console.log('inside match AFTER discover redirect');
+      }
+      else {
+        res.render('pages/login',
+          {
+            error: true, // want to put in message "Incorrect username or password."
+            message: 'Incorrect username or password.',
+          });
+      }
+    })
+    .catch(err => {
       res.render('pages/login',
-       {
-        error: true, // want to put in message "Incorrect username or password."
-        message: 'Incorrect username or password.',
-       });
-    }})
-  .catch(err => {
-      res.render('pages/login', 
-      {
-        error: true,
-        message: 'Username not found.',
-      });
+        {
+          error: true,
+          message: 'Username not found.',
+        });
     });
 });
 
- // Authentication Middleware.
- const auth = (req, res, next) => 
-  {
-    // console.log('authenticated');
+// Authentication Middleware.
+const auth = (req, res, next) => {
+  // console.log('authenticated');
+  if (!req.session.username) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
+
+app.get('/home', auth, (req, res) => {
+
+  // Authentication Required
+
+  // using axios to call the api and Get the daily open, high, low, and close (OHLC) for the entire stocks/equities markets. For US market only at the moment.
+  //this will provide the home page with all the info to populate it with everything it needs  
+  axios({
+    
+    url: home_url,
+    method: 'GET',
+    dataType: 'json',
+  })
+    .then(results => {
+      console.log('after axios then');
+
+      console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
+      // res.render('pages/discover', { events: results.data._embedded.events });
+    })
+    .catch(error => {
+      // Handle errors
+      console.log('after axios catch', error);
+      res.render('pages/home',
+        { stocks: [], message: 'API Call failed' });
+    });
+});
+
+app.get('/logout', (req, res) => {
+  if (req.session.username) {
+    req.session.username = null;
+    req.session.save();
     if (!req.session.username) {
-      // Default to login page.
-      return res.redirect('/login');
+      res.render('pages/logout', { message: 'Logged out successfully!' }); //this will call the /anotherRoute route in the API  
     }
-    next();
-  };
-
-app.get('/home', auth, (req, res) => 
-    {
-      // console.log('inside discover redirect');
-
-     
-      // // Authentication Required
-      // app.use(auth);
-
-      axios({
-        url: `https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/2024-04-10?adjusted=true&include_otc=false&apiKey=m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ`,
-        method: 'GET',
-        dataType: 'json',
-        // headers: {
-        //   Authorization: 'Bearer m7NOXY6BgOpLGGuT6prmQBoNInrLHVKJ',
-        // },
-        // params: {
-        //   date: yesterday,
-        //   adjusted: false,
-        //   include_otc: false,
-        // },
-      })
-        .then(results => {
-          console.log('after axios then');
-          
-          console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
-          // res.render('pages/discover', { events: results.data._embedded.events });
-        })
-        .catch(error => {
-          // Handle errors
-          console.log('after axios catch',error);
-          res.render('pages/home', 
-            { stocks: [], message: 'API Call failed' });
-        });
-    });
-
-app.get('/logout', (req, res) => 
-    {   
-        if(req.session.username)
-        {
-          req.session.username = null;
-          req.session.save();
-          if(!req.session.username)
-          {
-            res.render('pages/logout', { message: 'Logged out successfully!' }); //this will call the /anotherRoute route in the API  
-          }
-          else
-          {
-            res.render('pages/logout', { message: 'Logout NOT successful!!' }); //this will call the /anotherRoute route in the API
-          }
-        }
-        else
-        {
-          res.redirect('/login')
-        }
-    });
+    else {
+      res.render('pages/logout', { message: 'Logout NOT successful!!' }); //this will call the /anotherRoute route in the API
+    }
+  }
+  else {
+    res.redirect('/login')
+  }
+});
 
 // *****************************************************
 // <!-- Section 6 : Start Server-->
