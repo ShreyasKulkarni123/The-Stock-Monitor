@@ -1,0 +1,39 @@
+<div class="container py-4">
+    <!-- Title -->
+    <h1 class="display-4">Stock News</h1>
+
+    <div class="row">
+        <!-- Carousel -->
+        <div class="col-md-9">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">Latest News</h2>
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {{#each NewsArticle}}
+                            <div class="carousel-item {{#if @first}}active{{/if}}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="card-title"><a href="{{article_url}}">{{article_title}}</a></h3>
+                                        <p class="card-text">{{first_sentence}}...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -108,6 +108,11 @@ app.get('/', (req, res) => {
   res.render('pages/login'); //this will call the /anotherRoute route in the API
 });
 
+//API to load news page
+app.get('/news', (req, res) => {
+  res.render('pages/news'); //this will call the /anotherRoute route in the API
+});
+
 app.get('/register', (req, res) => {
   res.render('pages/register'); //this will call the /anotherRoute route in the API
 });
