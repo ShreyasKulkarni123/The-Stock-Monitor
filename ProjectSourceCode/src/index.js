@@ -78,15 +78,55 @@ app.use(
 // <!-- Section 4 : Global Variables and functions
 // *****************************************************
 
-// getting yesterdays date for calling information from the polygon API
-// need yesterdays date in order to get the most recent information for the stocks 
-let yesterday = new Date();
-yesterday.setDate(yesterday.getDate() - 2);
-yesterday = yesterday.toISOString().split('T')[0];
+// getting 2 days ago date for calling information from the polygon API
+// need 2 days ago date in order to get the most recent information for the stocks. 
+// using yesterdays can result in errors due to the API not allowing ticker information for the past 24 hours 
+let date_2_days_ago = new Date();
+date_2_days_ago.setDate(date_2_days_ago.getDate() - 3);
+// this makes it so that there is no time for the date and there is only the date (this is for formating for the API)
+date_2_days_ago = date_2_days_ago.toISOString().split('T')[0];
 
-let home_url = 'https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/' + yesterday + '?adjusted=true&include_otc=false&apiKey=' + process.env.API_KEY
-// let news_url = 
-// makeURL()
+// used for getting the past news articles up to the date being used.
+// will pull the most recent news and then pull news articles for days prior up to and including the date on the variable
+let date_of_news_articles_being_pull_until = new Date();
+date_of_news_articles_being_pull_until.setDate(date_of_news_articles_being_pull_until.getDate() - 5);
+// this makes it so that there is no time for the date and there is only the date (this is for formating for the API)
+date_of_news_articles_being_pull_until = date_of_news_articles_being_pull_until.toISOString().split('T')[0];
+
+//changing the num_of_articles will change the number of artcles that the News page API sends back
+const num_of_articles = 100;
+
+const home_url = 'https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/' + date_2_days_ago + '?adjusted=true&include_otc=false&apiKey=' + process.env.API_KEY;
+
+// this is the url to be sent through the get API for the news page.
+// changing the 'num_of_articles' will change the number of artcles that the API sends back
+// changing the 'date_of_news_articles_being_pull_until' will change the date that the news articles are pulled up to (will pull the most recent articles and all the articles back up to and including the date of 'date_of_news_articles_being_pull_until')
+// note that the 'num_of_articles' will determine the number of pages pulled overall. If the number of pages exceeds the date for being pull until then the rest of the pages that would return will not. Likewise if there IS enough pages to reach the end of the the date until, it will not pull more pages to reach the end of the limit number. 
+const news_url = 'https://api.polygon.io/v2/reference/news?published_utc.gte=' + date_of_news_articles_being_pull_until + '&order=desc&limit=' + num_of_articles + '&sort=published_utc&apiKey=' + process.env.API_KEY;
+
+// used to Query the watchlist table from the database to get the user's watchlist. Needs to be a global variable in order for it to be accessed by multiple APIs and functions
+let watchlist = [];
+
+// function used in conjunction with filter() in order to find all the stocks given the entire ticker list that are in the users watchlist
+async function filterWatchlist(featured_stocks) {
+  const filtered_watchlist_stocks = [];
+
+  // Iterate over each stock in the featured_stocks array
+  for (let i = 0; i < featured_stocks.length; i++) {
+    const stock_symbol = featured_stocks[i].T; // Get the symbol of the current stock
+
+    // Check if the symbol is in the watchlist
+    const is_in_watchlist = watchlist.some(item => item.symbol === stock_symbol);
+
+    if (is_in_watchlist) {
+      // If the symbol is in the watchlist, add the stock to the filtered array
+      filtered_watchlist_stocks.push(featured_stocks[i]);
+    }
+  }
+
+  return filtered_watchlist_stocks;
+}
+// makeTickerURL()
 // {
 
 // }
@@ -106,11 +146,6 @@ app.get('/welcome', (req, res) => {
 //API to load login page
 app.get('/', (req, res) => {
   res.render('pages/login'); //this will call the /anotherRoute route in the API
-});
-
-//API to load news page
-app.get('/news', (req, res) => {
-  res.render('pages/news'); //this will call the /anotherRoute route in the API
 });
 
 app.get('/register', (req, res) => {
@@ -140,7 +175,7 @@ app.post('/login', async (req, res) => {
 
   let username = req.body.username;
 
-  db.one('SELECT password FROM users WHERE username=$1;', [username])
+  db.one('SELECT * FROM users WHERE username=$1;', [username])
     .then(async (users) => {
 
       // check if password from request matches with password in DB
@@ -150,8 +185,11 @@ app.post('/login', async (req, res) => {
         // console.log('inside match before discover redirect');
         //save user details in session like in lab 7
         req.session.username = username;
+        
+        // save the user id for easily finding which stocks in the watchlist DB are being watched by the user and also for adding stocks to their watchlist. For ease of access in order to query the DB with their user_id
+        req.session.user_id = users.id;
         req.session.save();
-        res.redirect('/home')
+        res.redirect('/home');
         // console.log('inside match AFTER discover redirect');
       }
       else {
@@ -181,29 +219,62 @@ const auth = (req, res, next) => {
   next();
 };
 
-app.get('/home', auth, (req, res) => {
+app.get('/home', auth, async (req, res) => {
 
   // Authentication Required
 
   // using axios to call the api and Get the daily open, high, low, and close (OHLC) for the entire stocks/equities markets. For US market only at the moment.
   //this will provide the home page with all the info to populate it with everything it needs  
+  try {
+    // Get the user_id from the session in order to query the watchlist table in the DB
+    const user_id = req.session.user_id;
+
+
+    // Concurrently fetch watchlist and featured_stocks data (in parallel)
+    // Query the watchlist table from the database to get the user's watchlist
+    // Call the Polygon API to get featured stocks data and Extract featured stocks data from the API response
+    const [watchlist, featured_stocks] = await Promise.all([
+      db.manyOrNone('SELECT symbol FROM Watchlist WHERE user_id = $1', [user_id]),
+      axios.get(home_url).then(response => response.data.results)
+    ]);
+
+    // Filter the featured stocks based on the symbols in the watchlist
+    const watchlist_stocks = watchlist.map(watchlist_item => {
+      return featured_stocks.find(stock => stock.T === watchlist_item.symbol);
+    }).filter(Boolean); // Filter out undefined values
+    
+    // Render the home page with featured stocks and watchlist
+    res.render('pages/home', { featured_stocks, watchlist_stocks });
+  } 
+  catch (error) {
+    console.error('Error fetching data:', error);
+    // Render the home page with empty data and an error message
+    res.render('pages/home', { featured_stocks: [], watchlist_stocks: [], message: 'Failed to fetch data' });
+  }
+});
+
+//API to load news page
+app.get('/news', auth, (req, res) => {
+
+  // Authentication Required
+
+  // using axios to call the api and Get the most recent news articles relating to a stock ticker symbol, including a summary of the article and a link to the original source.
   axios({
     
-    url: home_url,
+    url: news_url,
     method: 'GET',
     dataType: 'json',
   })
     .then(results => {
-      console.log('after axios then');
-
       console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
-      // res.render('pages/discover', { events: results.data._embedded.events });
+    
+      res.render('pages/news', { NewsArticle: results.data.results });
     })
     .catch(error => {
       // Handle errors
       console.log('after axios catch', error);
-      res.render('pages/home',
-        { stocks: [], message: 'API Call failed' });
+      res.render('pages/news',
+        { NewsArticle: [], message: 'API Call failed' });
     });
 });
 

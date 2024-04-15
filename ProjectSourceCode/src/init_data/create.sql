@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS Stocks (
 
 CREATE TABLE IF NOT EXISTS Watchlist (
     user_id INT NOT NULL,
-    symbol VARCHAR(4) NOT NULL,
+    symbol VARCHAR(5) NOT NULL,
     CONSTRAINT Users
         FOREIGN KEY (user_id)
         REFERENCES Users (id)

@@ -13,9 +13,12 @@
                             {{#each NewsArticle}}
                             <div class="carousel-item {{#if @first}}active{{/if}}">
                                 <div class="card">
+                                    <img src="{{ image_url }}" class="card-img-top">
                                     <div class="card-body">
-                                        <h3 class="card-title"><a href="{{article_url}}">{{article_title}}</a></h3>
-                                        <p class="card-text">{{first_sentence}}...</p>
+                                        <h3 class="card-title"></h3>
+                                        <h5 class="card-text">{{description}}...</h5>
+                                        <p>Author: {{ author }}</p>
+                                        <p>Date Published: {{ published_utc }}</p>
                                     </div>
                                 </div>
                             </div>

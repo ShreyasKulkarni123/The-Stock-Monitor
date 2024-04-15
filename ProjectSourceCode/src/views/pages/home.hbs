@@ -10,14 +10,14 @@
                     <h2 class="card-title">Featured Stocks</h2>
                     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
-                            {{#each featuredStocks}}
+                            {{#each featured_stocks}}
                             <div class="carousel-item {{#if @first}}active{{/if}}">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h3 class="card-title">{{symbol}}</h3>
-                                        <p class="card-text">{{company}}</p>
-                                        <p class="card-text">{{industry}}</p>
-                                        <p class="card-text">Price: ${{price}}</p>
+                                        <h3 class="card-title">{{T}}</h3>
+                                        {{!-- <p class="card-text">{{company}}</p> --}}
+                                        {{!-- <p class="card-text">{{industry}}</p> --}}
+                                        <p class="card-text">Price: ${{c}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -44,8 +44,8 @@
                 <div class="card-body">
                     <h2 class="card-title">Watchlist</h2>
                     <ul class="list-group list-group-flush">
-                        {{#each watchlist}}
-                        <li class="list-group-item">{{symbol}} - ${{price}}</li>
+                        {{#each watchlist_stocks}}
+                        <li class="list-group-item">{{T}} - ${{c}}</li>
                         {{/each}}
                     </ul>
                 </div>
