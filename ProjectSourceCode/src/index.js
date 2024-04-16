@@ -202,6 +202,7 @@ app.post('/login', async (req, res) => {
       else {
         res.render('pages/login',
           {
+            username: req.session.username,
             error: true, // want to put in message "Incorrect username or password."
             message: 'Incorrect username or password.',
           });
@@ -210,6 +211,7 @@ app.post('/login', async (req, res) => {
     .catch(err => {
       res.render('pages/login',
         {
+          username: req.session.username,
           error: true,
           message: 'Username not found.',
         });
@@ -242,12 +244,21 @@ app.get('/home', auth, async (req, res) => {
     }).filter(Boolean); // Filter out undefined values
     
     // Render the home page with featured stocks and watchlist
-    res.render('pages/home', { featured_stocks, watchlist_stocks });
+    res.render('pages/home', { 
+      username: req.session.username,
+      featured_stocks, 
+      watchlist_stocks
+    });
   } 
   catch (error) {
     console.error('Error fetching data:', error);
     // Render the home page with empty data and an error message
-    res.render('pages/home', { featured_stocks: [], watchlist_stocks: [], message: 'Failed to fetch data' });
+    res.render('pages/home', { 
+      username: req.session.username,
+      featured_stocks: [],
+      watchlist_stocks: [],
+      message: 'Failed to fetch data'
+    });
   }
 });
 
@@ -266,13 +277,19 @@ app.get('/news', auth, (req, res) => {
     .then(results => {
       console.log(results.data); // the results will be displayed on the terminal if the docker containers are running // Send some parameters
     
-      res.render('pages/news', { NewsArticle: results.data.results });
+      res.render('pages/news', { 
+        username: req.session.username,
+        NewsArticle: results.data.results
+      });
     })
     .catch(error => {
       // Handle errors
       console.log('after axios catch', error);
-      res.render('pages/news',
-        { NewsArticle: [], message: 'API Call failed' });
+      res.render('pages/news', { 
+        username: req.session.username,
+        NewsArticle: [],
+        message: 'API Call failed'
+      });
     });
 });
 
@@ -281,10 +298,16 @@ app.get('/logout', (req, res) => {
     req.session.username = null;
     req.session.save();
     if (!req.session.username) {
-      res.render('pages/logout', { message: 'Logged out successfully!' }); //this will call the /anotherRoute route in the API  
+      res.render('pages/logout', { //this will call the /anotherRoute route in the API  
+        username: req.session.username,
+        message: 'Logged out successfully!'
+      }); 
     }
     else {
-      res.render('pages/logout', { message: 'Logout NOT successful!!' }); //this will call the /anotherRoute route in the API
+      res.render('pages/logout', { 
+        username: req.session.username,
+        message: 'Logout NOT successful!!'
+      }); //this will call the /anotherRoute route in the API
     }
   }
   else {
