@@ -135,17 +135,24 @@ async function filterWatchlist(featured_stocks) {
 // <!-- Section 5 : API Routes -->
 // *****************************************************
 
-// TODO - Include your API routes here
+
+// authentication middleware -- redirects to login page for pages that include it
+const auth = (req, res, next) => {
+  if (!req.session.username) {
+    return res.redirect('/login');
+  }
+  next();
+};
 
 //API default welcome test
-app.get('/welcome', (req, res) => {
+app.get('/welcome', auth, (req, res) => {
   res.status(200),
     res.json({ message: 'Welcome!', status: 'success' })
 });
 
 //API to load login page
-app.get('/', (req, res) => {
-  res.render('pages/login'); //this will call the /anotherRoute route in the API
+app.get('/', auth, (req, res) => {
+  res.redirect('/home'); //this will call the /anotherRoute route in the API
 });
 
 app.get('/register', (req, res) => {
@@ -209,15 +216,6 @@ app.post('/login', async (req, res) => {
     });
 });
 
-// Authentication Middleware.
-const auth = (req, res, next) => {
-  // console.log('authenticated');
-  if (!req.session.username) {
-    // Default to login page.
-    return res.redirect('/login');
-  }
-  next();
-};
 
 app.get('/home', auth, async (req, res) => {
 
