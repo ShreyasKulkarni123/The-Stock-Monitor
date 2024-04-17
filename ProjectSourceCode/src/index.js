@@ -47,7 +47,7 @@ const ProdDBConfig = {
   password: process.env.POSTGRES_PASSWORD, // the password of the user account
 };
 
-const db = pgp(dbConfig);
+const db = pgp(ProdDBConfig);
 
 // test your database
 db.connect()
