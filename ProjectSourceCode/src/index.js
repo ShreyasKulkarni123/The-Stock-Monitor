@@ -256,11 +256,17 @@ app.get('/home', auth, async (req, res) => {
       const watchlist_stocks = watchlist.map(watchlist_item => {
         return featured_stocks.find(stock => stock.T === watchlist_item.symbol);
       }).filter(Boolean); // Filter out undefined values
+
+      // save data to be parsed and rendered on graph,
+      // to be sent to clientside JS via /graphs_raw endpoinnt
+      req.session.watchlist_stocks = watchlist_stocks;
+      req.session.save();
       
       // Render the home page with featured stocks and watchlist
       res.render('pages/home', { 
         featured_stocks, 
         watchlist_stocks,
+        do_graphs: true,
         username: req.session.username
       });
     }
@@ -371,6 +377,18 @@ app.get('/logout', (req, res) => {
   else {
     res.redirect('/login')
   }
+});
+
+app.get('/graphs_raw', (req, res) => {
+  // to be called in client-side js when graphs are drawn
+  // get craploads of data about the stocks in the watchlist
+  // see home.hbs
+  res.json({ 
+    stuff: req.session.watchlist_stocks,
+    data: [
+      // hella data
+    ]
+  });
 });
 
 // *****************************************************

@@ -37,7 +37,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Watchlist -->
         <div class="col-md-3">
             <div class="card">
@@ -63,4 +62,10 @@
             </div>
         </div>
     </div>
+
+    {{#if do_graphs}}
+    <canvas id="myChart" style="width:100%"></canvas> 
+    {{else}}
+    <h2>no do_graphs</h2>
+    {{/if}}
 </div>
