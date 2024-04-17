@@ -300,7 +300,10 @@ app.get('/news', auth, (req, res) => {
     dataType: 'json',
   })
     .then(news_data => {
-      res.render('pages/news', { NewsArticle: news_data.data.results });
+      res.render('pages/news', { 
+        NewsArticle: news_data.data.results,
+        username: req.session.username
+      });
     })
     .catch(error => {
       // Handle errors
