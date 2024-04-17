@@ -100,9 +100,14 @@ Handlebars.registerHelper('convertToMST', function(utcDate) {
 });
 
 // makes a url for a specific ticker for the about page
-function makeTickerURL(ticker)
+function makeAboutTickerURL(ticker)
 {
   return ticker_url = 'https://api.polygon.io/v3/reference/tickers/' + ticker + '?apiKey=' + process.env.API_KEY;
+}
+
+function makeAggTickerURL(ticker, multiplier, timespan, from, to)
+{
+  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/'+ ticker + '/range/' + multiplier + '/' + timespan + '/' + from +'/' + to + '?adjusted=true&sort=asc&limit=50000&apiKey=' + process.env.API_KEY;
 }
 
 // function to get the number of days back that was the previous business day
@@ -116,7 +121,7 @@ function makeTickerURL(ticker)
 // need 1 days ago date in order to get the most recent information for the stocks. 
 // if the day prior or however many days ago thats pulled from is a weekend day then can result in errors due there being no data on those days. 
 let prev_business_day = new Date();
-prev_business_day.setDate(prev_business_day.getDate() - 1);
+prev_business_day.setDate(prev_business_day.getDate() - 2);
 // this makes it so that there is no time for the date and there is only the date (this is for formating for the API)
 prev_business_day = prev_business_day.toISOString().split('T')[0];
 
@@ -194,7 +199,7 @@ app.post('/login', async (req, res) => {
       const match = await bcrypt.compare(req.body.password, users.password);
 
       if (match) {
-        // console.log('inside match before discover redirect');
+
         //save user details in session like in lab 7
         req.session.username = username;
         
@@ -202,7 +207,6 @@ app.post('/login', async (req, res) => {
         req.session.user_id = users.id;
         req.session.save();
         res.redirect('/home');
-        // console.log('inside match AFTER discover redirect');
       }
       else {
         res.render('pages/login',
@@ -317,38 +321,43 @@ app.get('/news', auth, (req, res) => {
 });
 
 //API to load about page
-app.post('/about', auth, (req, res) => {
+app.post('/about', auth, async (req, res) => {
   // Authentication Required
+  try{
+    //getting the ticker from the user that will be used to get all the information about it from the polygon API
+    const ticker = req.body.ticker; 
 
-  //getting the ticker from the user that will be used to get all the information about it from the polygon API
-  const ticker = req.body.ticker; 
+    //this will return the correct URL to plug into the API for the information about the ticker provided
+    let ticker_url = makeAboutTickerURL(ticker)
 
-  //this will return the correct URL to plug into the API for the information about the ticker provided
-  let ticker_url = makeTickerURL(ticker)
-
-  // using axios to call the api and Get details for a single ticker. This response will have detailed information about the ticker and the company behind it.
-  axios({
+    // using axios to call the api and Get details for a single ticker. This response will have detailed information about the ticker and the company behind it.
+    const response = await axios.get(ticker_url);
     
-    url: ticker_url,
-    method: 'GET',
-    dataType: 'json',
-  })
-    .then(ticker_details => {
-      
+    if(response.data && response.data.results) {
+      // Extracting ticker_details from the response data
+      const ticker_details = response.data.results;
       res.render('pages/about', { 
-        ticker_details: ticker_details.data.results,
+        ticker_details: ticker_details,
         username: req.session.username
       });
-    })
-    .catch(error => {
-      // Handle errors
-      console.log('after axios catch', error);
-      res.render('pages/news', { 
-        ticker_details: [], 
-        message: 'API Call failed',
+    }
+    else {
+      console.log('ticker given is invalid', error);
+      res.render('pages/home', { 
+        message: 'ticker given is invalid',
         username: req.session.username
       });
+    }
+
+  }
+  catch(error) {
+    // Handle errors
+    console.log('error: ', error);
+    res.render('pages/home', { 
+      message: 'Ticker given is invalid',
+      username: req.session.username
     });
+  }
 });
 
 app.get('/logout', (req, res) => {
