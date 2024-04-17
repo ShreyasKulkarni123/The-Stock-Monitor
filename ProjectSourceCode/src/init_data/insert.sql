@@ -4,7 +4,8 @@ INSERT INTO Users (username, password, balance) VALUES
   ('kevin', '$2a$10$nSVP3MZ3eh019/kfP9iyguQ8jiudDlF0aSJzigbOiEF4giH6WF0iK', 1000),
   ('bob', 'password2', 500),
   ('charlie', 'password3', 1500),
-  ('david', 'password4', 200);
+  ('david', 'password4', 200),
+  ('me', '$2a$10$EaMc496EO3jInWiO3cZZJO9OERABsh4tuB1G86o23yRpdoWN8bvKS', 1);
 
 
 INSERT INTO Stocks (symbol, search_keyword) 
@@ -19,4 +20,8 @@ INSERT INTO watchlist (user_id, symbol) VALUES
 (3, 'AAPL'),
 (3, 'MSFT'),
 (3, 'GOOG'),
-(3, 'AMZN');
+(3, 'AMZN'),
+(7, 'AAPL'),
+(7, 'MSFT'),
+(7, 'GOOG'),
+(7, 'AMZN');
