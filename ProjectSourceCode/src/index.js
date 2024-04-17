@@ -153,15 +153,19 @@ app.get('/welcome', (req, res) => {
 
 //API to load login page
 app.get('/', (req, res) => {
-  res.render('pages/login'); //this will call the /anotherRoute route in the API
+  res.redirect('/login'); //this will call the /anotherRoute route in the API
 });
 
 app.get('/register', (req, res) => {
-  res.render('pages/register'); //this will call the /anotherRoute route in the API
+  res.render('pages/register', {
+    username: req.session.username
+  }); //this will call the /anotherRoute route in the API
 });
 
 app.get('/login', (req, res) => {
-  res.render('pages/login'); //this will call the /anotherRoute route in the API
+  res.render('pages/login', {
+    username: req.session.username
+  }); //this will call the /anotherRoute route in the API
 });
 
 // Register
@@ -205,6 +209,7 @@ app.post('/login', async (req, res) => {
           {
             error: true, // want to put in message "Incorrect username or password."
             message: 'Incorrect username or password.',
+            username: req.session.username
           });
       }
     })
@@ -213,6 +218,7 @@ app.post('/login', async (req, res) => {
         {
           error: true,
           message: 'Username not found.',
+          username: req.session.username
         });
     });
 });
@@ -252,18 +258,32 @@ app.get('/home', auth, async (req, res) => {
       }).filter(Boolean); // Filter out undefined values
       
       // Render the home page with featured stocks and watchlist
-      res.render('pages/home', { featured_stocks, watchlist_stocks });
+      res.render('pages/home', { 
+        featured_stocks, 
+        watchlist_stocks,
+        username: req.session.username
+      });
     }
     else {
       console.error('Error fetching data:', error);
       // Render the home page with empty data and an error message
-      res.render('pages/home', { featured_stocks: [], watchlist_stocks: [], message: 'No data from Polygon API' });
+      res.render('pages/home', { 
+        featured_stocks: [], 
+        watchlist_stocks: [], 
+        message: 'No data from Polygon API',
+        username: req.session.username
+      });
     }
   } 
   catch (error) {
     console.error('Error fetching data:', error);
     // Render the home page with empty data and an error message
-    res.render('pages/home', { featured_stocks: [], watchlist_stocks: [], message: 'Failed to fetch data' });
+    res.render('pages/home', { 
+      featured_stocks: [],
+      watchlist_stocks: [],
+      message: 'Failed to fetch data',
+      username: req.session.username
+    });
   }
 });
 
@@ -285,8 +305,11 @@ app.get('/news', auth, (req, res) => {
     .catch(error => {
       // Handle errors
       console.log('after axios catch', error);
-      res.render('pages/news',
-        { NewsArticle: [], message: 'API Call failed' });
+      res.render('pages/news', { 
+        NewsArticle: [], 
+        message: 'API Call failed',
+        username: req.session.username
+      });
     });
 });
 
@@ -309,13 +332,19 @@ app.post('/about', auth, (req, res) => {
   })
     .then(ticker_details => {
       
-      res.render('pages/about', { ticker_details: ticker_details.data.results });
+      res.render('pages/about', { 
+        ticker_details: ticker_details.data.results,
+        username: req.session.username
+      });
     })
     .catch(error => {
       // Handle errors
       console.log('after axios catch', error);
-      res.render('pages/news',
-        { ticker_details: [], message: 'API Call failed' });
+      res.render('pages/news', { 
+        ticker_details: [], 
+        message: 'API Call failed',
+        username: req.session.username
+      });
     });
 });
 
@@ -324,10 +353,16 @@ app.get('/logout', (req, res) => {
     req.session.username = null;
     req.session.save();
     if (!req.session.username) {
-      res.render('pages/logout', { message: 'Logged out successfully!' }); //this will call the /anotherRoute route in the API  
+      res.render('pages/logout', { 
+        message: 'Logged out successfully!',
+        username: req.session.username
+      }); //this will call the /anotherRoute route in the API  
     }
     else {
-      res.render('pages/logout', { message: 'Logout NOT successful!!' }); //this will call the /anotherRoute route in the API
+      res.render('pages/logout', { 
+        message: 'Logout NOT successful!!',
+        username: req.session.username
+      }); //this will call the /anotherRoute route in the API
     }
   }
   else {
