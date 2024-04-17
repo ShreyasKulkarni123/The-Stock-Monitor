@@ -3,40 +3,20 @@
     <h1 class="display-4">Stock News</h1>
 
     <div class="row">
-        <!-- Carousel -->
-        <div class="col-md-9">
-            <div class="card mb-4">
+        <!-- News Articles -->
+        {{#each NewsArticle}}
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card h-100 p-3">
+                <img src="{{ image_url }}" class="card-img-top" alt="{{ title }}">
                 <div class="card-body">
-                    <h2 class="card-title">Latest News</h2>
-                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            {{#each NewsArticle}}
-                            <div class="carousel-item {{#if @first}}active{{/if}}">
-                                <div class="card">
-                                    <img src="{{ image_url }}" class="card-img-top">
-                                    <div class="card-body">
-                                        <h3 class="card-title"></h3>
-                                        <h5 class="card-text">{{description}}...</h5>
-                                        <p>Author: {{ author }}</p>
-                                        <p>Date Published: {{ published_utc }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {{/each}}
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
+                    <h5 class="card-title">{{ title }}</h5>
+                    <p class="card-text">{{ truncate description 150 }}...</p>
+                    <p class="card-text">Author: {{ author }}</p>
+                    <p class="card-text">Date Published (MST): {{ convertToMST published_utc }}</p>
+                    <a class="card-text" target="_blank" href="{{ article_url }}">Read more</a>
                 </div>
             </div>
         </div>
+        {{/each}}
     </div>
 </div>

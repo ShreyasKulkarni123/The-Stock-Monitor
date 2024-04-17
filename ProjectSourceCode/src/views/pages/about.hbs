@@ -1,50 +1,17 @@
-<!DOCTYPE html>
-
-<html>
-
-    <body>
-
-    <div class="container py-4">
+<div class="container py-4">
     <!-- Title -->
-
     <div class="row">
         <div class="col-md-9">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h2 class="card-title">Company/Stock Information</h2>
-                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            {{#each CompanyInfo}}
-                            <div class="carousel-item {{#if @first}}active{{/if}}">
-                                <div class="card">
-                                    <img src="{{ logo_url }}" class="card-img-top">
-                                    <div class="card-body">
-                                        <h3 class="card-title">{{ company_name }}</h3>
-                                        <p class="card-text">{{ description }}...</p>
-                                        <p>Founder: {{ founder }}</p>
-                                        <p>Founded: {{ founded_date }}</p>
-                                        <p>Headquarters: {{ headquarters }}</p>
-                                        <p>Website: <a href="{{ website }}">{{ website }}</a></p>
-                                    </div>
-                                </div>
-                            </div>
-                            {{/each}}
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                </div>
+            <h2>{{ ticker_details.name }}</h2>
+            <div class="mb-4">
+                <p>{{ ticker_details.description }}</p>
+                <p>Address: {{ ticker_details.address.address1 }}, {{ ticker_details.address.city }}, {{ ticker_details.address.state }}, {{ ticker_details.address.postal_code }}</p>
+                <p>Website: <a href="{{ ticker_details.homepage_url }}">{{ ticker_details.homepage_url }}</a></p>
+                <p>Market Cap: ${{ ticker_details.market_cap }}</p>
+                <p>Industry: {{ ticker_details.sic_description }}</p>
+                <p>Ticker: {{ ticker_details.ticker }}</p>
+                <p>Total Employees: {{ ticker_details.total_employees }}</p>
             </div>
         </div>
-
-    </body>
-
-</html>
+    </div>
+</div>

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS Users (
 );
 
 CREATE TABLE IF NOT EXISTS Stocks (
-  symbol VARCHAR(4) PRIMARY KEY,
+  symbol VARCHAR(5) PRIMARY KEY,
   search_keyWord VARCHAR(100) NOT NULL
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Watchlist (
 
 CREATE TABLE IF NOT EXISTS Held_Stocks (
     user_id INT NOT NULL,
-    symbol VARCHAR(4) NOT NULL,
+    symbol VARCHAR(5) NOT NULL,
     quantity INT NOT NULL,
     CONSTRAINT Users
         FOREIGN KEY (user_id)
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS Held_Stocks (
 
 CREATE TABLE IF NOT EXISTS Transactions (
     user_id INT NOT NULL,
-    symbol VARCHAR(4) NOT NULL,
+    symbol VARCHAR(5) NOT NULL,
     quantity INT NOT NULL,
     price DECIMAL NOT NULL,
     date DATE NOT NULL,
