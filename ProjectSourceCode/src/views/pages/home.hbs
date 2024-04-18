@@ -8,7 +8,7 @@
         <div class="col-md-9">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h2 class="card-title">Featured Stocks</h2>
+                    <h2 class="card-title">Featured Stocks 1</h2>
                     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
                             {{#each featured_stocks}}
@@ -19,6 +19,10 @@
                                         {{!-- <p class="card-text">{{company}}</p> --}}
                                         {{!-- <p class="card-text">{{industry}}</p> --}}
                                         <p class="card-text">Price: ${{c}}</p>
+                                        <form action="/add-to-watchlist" method="POST">
+                                            <input type="hidden" name="ticker" value="{{T}}">
+                                            <button type="submit" class="btn btn">Favorite</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -35,6 +39,10 @@
                             <span class="visually-hidden">Next</span>
                         </button>
                     </div>
+                    <h3 class="card-title">{{T}}</h3>
+                    <p class="card-text">Price: ${{c}}</p>
+                    <!-- Add an about button -->
+                    <a href="/details?ticker={{T}}" class="btn btn-info">About</a>
                 </div>
             </div>
         </div>
