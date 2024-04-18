@@ -3,26 +3,29 @@
     <div class="navbar-nav">
         {{!-- page links --}}
         <div class="nav-item">
-          <a class="nav-link" href="/" title="Home">Home</a>
+          <a class="nav-link" href="{{ logged_in ? '/' : '/login' }}" titel="Home">Home</a>
         </div>
         <div class="nav-item">
-          <a class="nav-link" href="/login" title="Login">Login</a>
+          <a class="nav-link" href="{{ logged_in ? '/' : '/login' }}" title="Login">Login</a>
         </div>
         <div class="nav-item">
           <a class="nav-link" href="/register" title="Register">Register</a>
         </div>
+        {{/if}}
       </div>
       <div class="ml-auto">
-        {{!-- icon/right side --}}
-        <img src="../../resources/img/" alt="Webpage icon" height="30">
-      </div>
-      <div>
         {{!-- search bar --}}
-        <form class="form-inline">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+        <form method="POST" action="/about" class="form-inline">
+          <div class="row">
+            <div class="col">
+              <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="ticker">
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
-  </nav>
-</header>
+  </div>
+</nav>

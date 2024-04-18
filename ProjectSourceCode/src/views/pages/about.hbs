@@ -1,0 +1,17 @@
+<div class="container py-4">
+    <!-- Title -->
+    <div class="row">
+        <div class="col-md-9">
+            <h2>{{ ticker_details.name }}</h2>
+            <div class="mb-4">
+                <p>{{ ticker_details.description }}</p>
+                <p>Address: {{ ticker_details.address.address1 }}, {{ ticker_details.address.city }}, {{ ticker_details.address.state }}, {{ ticker_details.address.postal_code }}</p>
+                <p>Website: <a href="{{ ticker_details.homepage_url }}">{{ ticker_details.homepage_url }}</a></p>
+                <p>Market Cap: ${{ ticker_details.market_cap }}</p>
+                <p>Industry: {{ ticker_details.sic_description }}</p>
+                <p>Ticker: {{ ticker_details.ticker }}</p>
+                <p>Total Employees: {{ ticker_details.total_employees }}</p>
+            </div>
+        </div>
+    </div>
+</div>
