@@ -88,70 +88,14 @@ app.use(
 // <!-- Section 4 : Global Variables and functions
 // *****************************************************
 
-// Handlebars helper to truncate description text for news descriptions
-Handlebars.registerHelper('truncate', function(text, length) {
-  if (text.length > length) {
-    return text.substring(0, length);
-  } 
-  else {
-      return text;
-  }
-});
+// Importing helper handlebars functions
+const handlebarsHelpers = require('./resources/library/handlebarsHelpers'); // Import your custom Handlebars helpers
 
-// Handlebars helper to convert UTC to MST
-Handlebars.registerHelper('convertToMST', function(utcDate) {
-  // Parse UTC date string using moment.js
-  const utcMoment = moment.utc(utcDate);
-  // Convert to MST timezone
-  const mstMoment = utcMoment.tz('America/Denver');
-  // Format the date in MST
-  return mstMoment.format('YYYY-MM-DD HH:mm:ss');
-});
+// Importing helper URL functions
+const { makeAboutTickerURL, makeAggTickerURL } = require('./resources/library/URLHelpers');
 
-// makes a url for a specific ticker for the about page
-function makeAboutTickerURL(ticker)
-{
-  return ticker_url = 'https://api.polygon.io/v3/reference/tickers/' + ticker + '?apiKey=' + process.env.API_KEY;
-}
-
-function makeAggTickerURL(ticker, multiplier, timespan, from, to)
-{
-  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/'+ ticker + '/range/' + multiplier + '/' + timespan + '/' + from +'/' + to + '?adjusted=true&sort=asc&limit=50000&apiKey=' + process.env.API_KEY;
-}
-
-// function to get the number of days back that was the previous business day
-// this is to avoid issues with sunday and saturday not being a business day
-// function numDaysOfPrevBusinessDay()
-// {
-
-// }
-
-// getting X days ago date for calling information from the polygon API
-// need 1 days ago date in order to get the most recent information for the stocks. 
-// if the day prior or however many days ago thats pulled from is a weekend day then can result in errors due there being no data on those days. 
-let prev_business_day = new Date();
-prev_business_day.setDate(prev_business_day.getDate() - 2);
-// this makes it so that there is no time for the date and there is only the date (this is for formating for the API)
-prev_business_day = prev_business_day.toISOString().split('T')[0];
-
-// used for getting the past news articles up to the date being used.
-// will pull the most recent news and then pull news articles for days prior up to and including the date on the variable
-let date_of_news_articles_being_pull_until = new Date();
-date_of_news_articles_being_pull_until.setDate(date_of_news_articles_being_pull_until.getDate() - 5);
-// this makes it so that there is no time for the date and there is only the date (this is for formating for the API)
-date_of_news_articles_being_pull_until = date_of_news_articles_being_pull_until.toISOString().split('T')[0];
-
-//changing the num_of_articles will change the number of artcles that the News page API sends back
-const num_of_articles = 100;
-
-const home_url = 'https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/' + prev_business_day + '?adjusted=true&include_otc=false&apiKey=' + process.env.API_KEY;
-
-// this is the url to be sent through the get API for the news page.
-// changing the 'num_of_articles' will change the number of artcles that the API sends back
-// changing the 'date_of_news_articles_being_pull_until' will change the date that the news articles are pulled up to (will pull the most recent articles and all the articles back up to and including the date of 'date_of_news_articles_being_pull_until')
-// note that the 'num_of_articles' will determine the number of pages pulled overall. If the number of pages exceeds the date for being pull until then the rest of the pages that would return will not. Likewise if there IS enough pages to reach the end of the the date until, it will not pull more pages to reach the end of the limit number. 
-const news_url = 'https://api.polygon.io/v2/reference/news?published_utc.gte=' + date_of_news_articles_being_pull_until + '&order=desc&limit=' + num_of_articles + '&sort=published_utc&apiKey=' + process.env.API_KEY;
-
+// Importing helper date functions
+const { findLastBusinessDay, getHomeURL, getNewsURL } = require('./resources/library/findLastBusinessDay');
 
 // *****************************************************
 // <!-- Section 5 : API Routes -->
@@ -255,13 +199,13 @@ app.get('/home', auth, async (req, res) => {
   try {
     // Get the user_id from the session in order to query the watchlist table in the DB
     const user_id = req.session.user_id;
-
+    
     // Concurrently fetch watchlist and featured_stocks data (in parallel)
     // Query the watchlist table from the database to get the user's watchlist
     // Call the Polygon API to get featured stocks data and Extract featured stocks data from the API response
     const [watchlist, featured_stocks] = await Promise.all([
       db.manyOrNone('SELECT symbol FROM Watchlist WHERE user_id = $1', [user_id]),
-      axios.get(home_url).then(response => response.data.results)
+      axios.get(getHomeURL()).then(response => response.data.results)
     ]);
 
     if(featured_stocks) {
@@ -308,7 +252,7 @@ app.get('/news', auth, (req, res) => {
   // using axios to call the api and Get the most recent news articles relating to a stock ticker symbol, including a summary of the article and a link to the original source.
   axios({
     
-    url: news_url,
+    url: getNewsURL(),
     method: 'GET',
     dataType: 'json',
   })
