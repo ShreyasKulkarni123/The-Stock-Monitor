@@ -16,10 +16,6 @@ CREATE TABLE IF NOT EXISTS Watchlist (
     CONSTRAINT Users
         FOREIGN KEY (user_id)
         REFERENCES Users (id)
-        ON DELETE CASCADE,
-    CONSTRAINT Stocks
-        FOREIGN KEY (symbol)
-        REFERENCES Stocks (symbol)
         ON DELETE CASCADE
 );
 

@@ -16,6 +16,7 @@ const axios = require('axios'); // To make HTTP requests from our server. We'll 
 const { markAsUntransferable } = require('worker_threads');
 const { env } = require('process');
 const moment = require('moment-timezone');
+const { error } = require('console');
 
 
 // *****************************************************
@@ -89,17 +90,17 @@ app.use(
 // *****************************************************
 
 // Handlebars helper to truncate description text for news descriptions
-Handlebars.registerHelper('truncate', function(text, length) {
+Handlebars.registerHelper('truncate', function (text, length) {
   if (text.length > length) {
     return text.substring(0, length);
-  } 
+  }
   else {
-      return text;
+    return text;
   }
 });
 
 // Handlebars helper to convert UTC to MST
-Handlebars.registerHelper('convertToMST', function(utcDate) {
+Handlebars.registerHelper('convertToMST', function (utcDate) {
   // Parse UTC date string using moment.js
   const utcMoment = moment.utc(utcDate);
   // Convert to MST timezone
@@ -109,14 +110,12 @@ Handlebars.registerHelper('convertToMST', function(utcDate) {
 });
 
 // makes a url for a specific ticker for the about page
-function makeAboutTickerURL(ticker)
-{
+function makeAboutTickerURL(ticker) {
   return ticker_url = 'https://api.polygon.io/v3/reference/tickers/' + ticker + '?apiKey=' + process.env.API_KEY;
 }
 
-function makeAggTickerURL(ticker, multiplier, timespan, from, to)
-{
-  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/'+ ticker + '/range/' + multiplier + '/' + timespan + '/' + from +'/' + to + '?adjusted=true&sort=asc&limit=50000&apiKey=' + process.env.API_KEY;
+function makeAggTickerURL(ticker, multiplier, timespan, from, to) {
+  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/' + ticker + '/range/' + multiplier + '/' + timespan + '/' + from + '/' + to + '?adjusted=true&sort=asc&limit=50000&apiKey=' + process.env.API_KEY;
 }
 
 // function to get the number of days back that was the previous business day
@@ -152,6 +151,7 @@ const home_url = 'https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks
 // note that the 'num_of_articles' will determine the number of pages pulled overall. If the number of pages exceeds the date for being pull until then the rest of the pages that would return will not. Likewise if there IS enough pages to reach the end of the the date until, it will not pull more pages to reach the end of the limit number. 
 const news_url = 'https://api.polygon.io/v2/reference/news?published_utc.gte=' + date_of_news_articles_being_pull_until + '&order=desc&limit=' + num_of_articles + '&sort=published_utc&apiKey=' + process.env.API_KEY;
 
+let current_page_url;
 
 // *****************************************************
 // <!-- Section 5 : API Routes -->
@@ -211,7 +211,7 @@ app.post('/login', async (req, res) => {
 
         //save user details in session like in lab 7
         req.session.username = username;
-        
+
         // save the user id for easily finding which stocks in the watchlist DB are being watched by the user and also for adding stocks to their watchlist. For ease of access in order to query the DB with their user_id
         req.session.user_id = users.id;
         req.session.save();
@@ -264,40 +264,109 @@ app.get('/home', auth, async (req, res) => {
       axios.get(home_url).then(response => response.data.results)
     ]);
 
-    if(featured_stocks) {
+    if (featured_stocks) {
       // Filter the featured stocks based on the symbols in the watchlist
       const watchlist_stocks = watchlist.map(watchlist_item => {
         return featured_stocks.find(stock => stock.T === watchlist_item.symbol);
       }).filter(Boolean); // Filter out undefined values
-      
+
       // Render the home page with featured stocks and watchlist
-      res.render('pages/home', { 
-        featured_stocks, 
+      res.render('pages/home', {
+        featured_stocks,
         watchlist_stocks,
         username: req.session.username
       });
+      // setting current page for reloading when adding to watchlist
+      // console.log('current_page_url looks like: ' + current_page_url);
     }
     else {
       console.error('Error fetching data:', error);
       // Render the home page with empty data and an error message
-      res.render('pages/home', { 
-        featured_stocks: [], 
-        watchlist_stocks: [], 
+      res.render('pages/home', {
+        featured_stocks: [],
+        watchlist_stocks: [],
         message: 'No data from Polygon API',
         username: req.session.username
       });
     }
-  } 
+  }
   catch (error) {
     console.error('Error fetching data:', error);
     // Render the home page with empty data and an error message
-    res.render('pages/home', { 
+    res.render('pages/home', {
       featured_stocks: [],
       watchlist_stocks: [],
       message: 'Failed to fetch data',
       username: req.session.username
     });
   }
+});
+
+app.get('/about', auth, async (req, res) => {
+  // Authentication Required
+  try {
+    //getting the ticker from the user that will be used to get all the information about it from the polygon API
+    const ticker = res.session.ticker;
+
+    //this will return the correct URL to plug into the API for the information about the ticker provided
+    let ticker_url = makeAboutTickerURL(ticker)
+
+    // using axios to call the api and Get details for a single ticker. This response will have detailed information about the ticker and the company behind it.
+    const response = await axios.get(ticker_url);
+
+    if (response.data && response.data.results) {
+      // Extracting ticker_details from the response data
+      const ticker_details = response.data.results;
+      res.render('pages/about', {
+        ticker_details: ticker_details,
+        username: req.session.username
+      });
+    }
+    else {
+      console.log('ticker given is invalid', error);
+      res.render('pages/home', {
+        message: 'ticker given is invalid',
+        username: req.session.username
+      });
+    }
+
+  }
+  catch (error) {
+    // Handle errors
+    console.log('error: ', error);
+    res.render('pages/home', {
+      message: 'Ticker given is invalid',
+      username: req.session.username
+    });
+  }
+});
+
+app.post('/add-to-watchlist_from_about', (req, res) => {
+  const ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  res.session.ticker = ticker;
+  res.session.save();
+  db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
+  .then(reload => {
+    res.redirect('/about'); 
+  })
+  .catch(err => {
+    res.redirect('/about');
+  });
+});
+
+app.post('/add-to-watchlist_from_home', (req, res) => {
+  const ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  const previous_page = req.body.current_page;
+  console.log(previous_page);
+  db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
+  .then(reload => {
+    res.redirect(previous_page); 
+  })
+  .catch(err => {
+    res.redirect(previous_page);
+  });
 });
 
 //API to load news page
@@ -307,13 +376,13 @@ app.get('/news', auth, (req, res) => {
 
   // using axios to call the api and Get the most recent news articles relating to a stock ticker symbol, including a summary of the article and a link to the original source.
   axios({
-    
+
     url: news_url,
     method: 'GET',
     dataType: 'json',
   })
     .then(news_data => {
-      res.render('pages/news', { 
+      res.render('pages/news', {
         NewsArticle: news_data.data.results,
         username: req.session.username
       });
@@ -321,8 +390,8 @@ app.get('/news', auth, (req, res) => {
     .catch(error => {
       // Handle errors
       console.log('after axios catch', error);
-      res.render('pages/news', { 
-        NewsArticle: [], 
+      res.render('pages/news', {
+        NewsArticle: [],
         message: 'API Call failed',
         username: req.session.username
       });
@@ -332,37 +401,37 @@ app.get('/news', auth, (req, res) => {
 //API to load about page
 app.post('/about', auth, async (req, res) => {
   // Authentication Required
-  try{
+  try {
     //getting the ticker from the user that will be used to get all the information about it from the polygon API
-    const ticker = req.body.ticker; 
+    const ticker = req.body.ticker;
 
     //this will return the correct URL to plug into the API for the information about the ticker provided
     let ticker_url = makeAboutTickerURL(ticker)
 
     // using axios to call the api and Get details for a single ticker. This response will have detailed information about the ticker and the company behind it.
     const response = await axios.get(ticker_url);
-    
-    if(response.data && response.data.results) {
+
+    if (response.data && response.data.results) {
       // Extracting ticker_details from the response data
       const ticker_details = response.data.results;
-      res.render('pages/about', { 
+      res.render('pages/about', {
         ticker_details: ticker_details,
         username: req.session.username
       });
     }
     else {
       console.log('ticker given is invalid', error);
-      res.render('pages/home', { 
+      res.render('pages/home', {
         message: 'ticker given is invalid',
         username: req.session.username
       });
     }
 
   }
-  catch(error) {
+  catch (error) {
     // Handle errors
     console.log('error: ', error);
-    res.render('pages/home', { 
+    res.render('pages/home', {
       message: 'Ticker given is invalid',
       username: req.session.username
     });
@@ -374,13 +443,13 @@ app.get('/logout', (req, res) => {
     req.session.username = null;
     req.session.save();
     if (!req.session.username) {
-      res.render('pages/logout', { 
+      res.render('pages/logout', {
         message: 'Logged out successfully!',
         username: req.session.username
       }); //this will call the /anotherRoute route in the API  
     }
     else {
-      res.render('pages/logout', { 
+      res.render('pages/logout', {
         message: 'Logout NOT successful!!',
         username: req.session.username
       }); //this will call the /anotherRoute route in the API

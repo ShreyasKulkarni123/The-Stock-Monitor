@@ -3,10 +3,20 @@
     <div class="navbar-nav">
         {{!-- page links --}}
         <div class="nav-item">
-          <a class="nav-link" href="{{ logged_in ? '/' : '/login' }}" titel="Home">Home</a>
+          {{!-- <a class="nav-link" href="{{ username ? '/' : '/login' }}" titel="Home">Home</a> --}}
+          <a class="nav-link" href="/home" titel="Home">Home</a>
         </div>
         <div class="nav-item">
-          <a class="nav-link" href="{{ logged_in ? '/' : '/login' }}" title="Login">Login</a>
+          {{!-- <a class="nav-link" href="{{ username ? '/' : '/register' }}" title="Register">Register</a> --}}
+          <a class="nav-link" href="/news" title="News">News</a>
+        </div>
+        {{#if username}}
+        <div class="nav-item">
+          <a class="nav-link" href="/logout" title="Register">Logout</a>
+        </div>
+        {{else}}
+        <div class="nav-item">
+          <a class="nav-link" href="/login" title="Login">Login</a>
         </div>
         <div class="nav-item">
           <a class="nav-link" href="/register" title="Register">Register</a>
