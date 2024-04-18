@@ -7,7 +7,7 @@
         <div class="col-md-9">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h2 class="card-title">Featured Stocks</h2>
+                    <h2 class="card-title">Featured Stocks 1</h2>
                     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
                             {{#each featured_stocks}}
@@ -34,6 +34,10 @@
                             <span class="visually-hidden">Next</span>
                         </button>
                     </div>
+                    <h3 class="card-title">{{T}}</h3>
+                    <p class="card-text">Price: ${{c}}</p>
+                    <!-- About button -->
+                    <a href="/about" class="btn btn-info">About</a>
                 </div>
             </div>
         </div>
