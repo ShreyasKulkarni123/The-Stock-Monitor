@@ -126,13 +126,27 @@ function makeAggTickerURL(ticker, multiplier, timespan, from, to)
 
 // }
 
+function isBusinessDay(date) {
+  // if weekday then return 1
+  return date.getDay() % 6 !== 0;
+}
+
+function findLastBusinessDay() {
+  let currentDate = new Date();
+  while (!isBusinessDay(currentDate)) {
+      currentDate.setDate(currentDate.getDate() - 1);
+  }
+  return currentDate;
+}
+
 // getting X days ago date for calling information from the polygon API
 // need 1 days ago date in order to get the most recent information for the stocks. 
 // if the day prior or however many days ago thats pulled from is a weekend day then can result in errors due there being no data on those days. 
-let prev_business_day = new Date();
-prev_business_day.setDate(prev_business_day.getDate() - 2);
+let prev_business_day = findLastBusinessDay();
 // this makes it so that there is no time for the date and there is only the date (this is for formating for the API)
 prev_business_day = prev_business_day.toISOString().split('T')[0];
+
+console.log("prev_business_day looks like: " + prev_business_day)
 
 // used for getting the past news articles up to the date being used.
 // will pull the most recent news and then pull news articles for days prior up to and including the date on the variable
@@ -269,7 +283,7 @@ app.get('/home', auth, async (req, res) => {
       const watchlist_stocks = watchlist.map(watchlist_item => {
         return featured_stocks.find(stock => stock.T === watchlist_item.symbol);
       }).filter(Boolean); // Filter out undefined values
-      
+
       // Render the home page with featured stocks and watchlist
       res.render('pages/home', { 
         featured_stocks, 
