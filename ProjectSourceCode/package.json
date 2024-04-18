@@ -23,7 +23,7 @@
   },
   "scripts": {
     "prestart": "npm install",
-    "start": "nodemon index.js",
+    "start": "./node_modules/nodemon/bin/nodemon.js The-Stock-Monitor",
     "test": "mocha",
     "testandrun": "npm run prestart && npm run test && npm start",
     "run": "npm run prestart && npm start"
