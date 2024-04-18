@@ -5,6 +5,9 @@ function isBusinessDay(date) {
 
 function findLastBusinessDay() {
     let currentDate = new Date();
+    if (isBusinessDay(currentDate)) {
+        return (currentDate.setDate(currentDate.getDate() - 1));
+    }
     while (!isBusinessDay(currentDate)) {
         currentDate.setDate(currentDate.getDate() - 1);
     }
