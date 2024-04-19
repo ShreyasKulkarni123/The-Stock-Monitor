@@ -1,20 +1,8 @@
-.carousel-control-prev, .carousel-control-next {
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-    border-radius: 50%; /* Circular buttons */
-    width: 50px; /* Larger button size */
-    height: 50px; /* Larger button size */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    width: 30px; /* Larger icon */
-    height: 30px; /* Larger icon */
-}
-
-.carousel-control-prev:hover, .carousel-control-next:hover {
-    background-color: rgba(0, 0, 0, 0.7); /* Darker on hover for better visibility */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5); /* Shadow for better depth */
+.remove-watchlist-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 10px; /* To give some space between the buttons */
+    cursor: pointer;
 }

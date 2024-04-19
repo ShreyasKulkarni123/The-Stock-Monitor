@@ -347,26 +347,40 @@ app.post('/add-to-watchlist_from_about', (req, res) => {
   res.session.ticker = ticker;
   res.session.save();
   db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
-  .then(reload => {
-    res.redirect('/about'); 
-  })
-  .catch(err => {
-    res.redirect('/about');
-  });
+    .then(reload => {
+      res.redirect('/about');
+    })
+    .catch(err => {
+      res.redirect('/about');
+    });
 });
 
 app.post('/add-to-watchlist_from_home', (req, res) => {
   const ticker = req.body.ticker;
   const userID = req.session.user_id;
   const previous_page = req.body.current_page;
-  console.log(previous_page);
   db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
-  .then(reload => {
-    res.redirect(previous_page); 
-  })
-  .catch(err => {
-    res.redirect(previous_page);
-  });
+    .then(reload => {
+      res.redirect(previous_page);
+    })
+    .catch(err => {
+      res.redirect(previous_page);
+    });
+});
+
+app.post('/remove-from-watchlist', (req, res) => {
+  const ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  const previous_page = req.body.current_page;
+  db.none('DELETE FROM watchlist WHERE user_id = $1 AND symbol = $2;', [userID, ticker])
+    .then(() => {
+      res.redirect(previous_page); // Redirects back to the previous page after successful deletion
+    })
+    .catch(err => {
+      console.error('Error removing from watchlist:', err);
+      res.redirect(previous_page); // Redirects back if there is an error during the deletion
+    });
+
 });
 
 //API to load news page
