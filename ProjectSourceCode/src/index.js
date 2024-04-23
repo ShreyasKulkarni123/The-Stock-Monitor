@@ -90,17 +90,17 @@ app.use(
 // *****************************************************
 
 // Handlebars helper to truncate description text for news descriptions
-Handlebars.registerHelper('truncate', function (text, length) {
+Handlebars.registerHelper('truncate', function(text, length) {
   if (text.length > length) {
     return text.substring(0, length);
-  }
+  } 
   else {
-    return text;
+      return text;
   }
 });
 
 // Handlebars helper to convert UTC to MST
-Handlebars.registerHelper('convertToMST', function (utcDate) {
+Handlebars.registerHelper('convertToMST', function(utcDate) {
   // Parse UTC date string using moment.js
   const utcMoment = moment.utc(utcDate);
   // Convert to MST timezone
@@ -110,12 +110,14 @@ Handlebars.registerHelper('convertToMST', function (utcDate) {
 });
 
 // makes a url for a specific ticker for the about page
-function makeAboutTickerURL(ticker) {
+function makeAboutTickerURL(ticker)
+{
   return ticker_url = 'https://api.polygon.io/v3/reference/tickers/' + ticker + '?apiKey=' + process.env.API_KEY;
 }
 
-function makeAggTickerURL(ticker, multiplier, timespan, from, to) {
-  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/' + ticker + '/range/' + multiplier + '/' + timespan + '/' + from + '/' + to + '?adjusted=true&sort=asc&limit=50000&apiKey=' + process.env.API_KEY;
+function makeAggTickerURL(ticker, multiplier, timespan, from, to)
+{
+  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/'+ ticker + '/range/' + multiplier + '/' + timespan + '/' + from +'/' + to + '?adjusted=true&sort=asc&limit=50000&apiKey=' + process.env.API_KEY;
 }
 
 // function to get the number of days back that was the previous business day
@@ -151,7 +153,6 @@ const home_url = 'https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks
 // note that the 'num_of_articles' will determine the number of pages pulled overall. If the number of pages exceeds the date for being pull until then the rest of the pages that would return will not. Likewise if there IS enough pages to reach the end of the the date until, it will not pull more pages to reach the end of the limit number. 
 const news_url = 'https://api.polygon.io/v2/reference/news?published_utc.gte=' + date_of_news_articles_being_pull_until + '&order=desc&limit=' + num_of_articles + '&sort=published_utc&apiKey=' + process.env.API_KEY;
 
-let current_page_url;
 
 // *****************************************************
 // <!-- Section 5 : API Routes -->
@@ -255,13 +256,13 @@ app.get('/home', auth, async (req, res) => {
   try {
     // Get the user_id from the session in order to query the watchlist table in the DB
     const user_id = req.session.user_id;
-
+    
     // Concurrently fetch watchlist and featured_stocks data (in parallel)
     // Query the watchlist table from the database to get the user's watchlist
     // Call the Polygon API to get featured stocks data and Extract featured stocks data from the API response
     const [watchlist, featured_stocks] = await Promise.all([
       db.manyOrNone('SELECT symbol FROM Watchlist WHERE user_id = $1', [user_id]),
-      axios.get(home_url).then(response => response.data.results)
+      axios.get(getHomeURL()).then(response => response.data.results)
     ]);
 
     if (featured_stocks) {
@@ -310,7 +311,7 @@ app.get('/news', auth, (req, res) => {
 
   // using axios to call the api and Get the most recent news articles relating to a stock ticker symbol, including a summary of the article and a link to the original source.
   axios({
-
+    
     url: news_url,
     method: 'GET',
     dataType: 'json',
