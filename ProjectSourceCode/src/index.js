@@ -155,7 +155,7 @@ app.post('/login', async (req, res) => {
 
         //save user details in session like in lab 7
         req.session.username = username;
-        
+
         // save the user id for easily finding which stocks in the watchlist DB are being watched by the user and also for adding stocks to their watchlist. For ease of access in order to query the DB with their user_id
         req.session.user_id = users.id;
         req.session.save();
@@ -208,12 +208,12 @@ app.get('/home', auth, async (req, res) => {
       axios.get(getHomeURL()).then(response => response.data.results)
     ]);
 
-    if(featured_stocks) {
+    if (featured_stocks) {
       // Filter the featured stocks based on the symbols in the watchlist
       const watchlist_stocks = watchlist.map(watchlist_item => {
         return featured_stocks.find(stock => stock.T === watchlist_item.symbol);
       }).filter(Boolean); // Filter out undefined values
-      
+
       // Render the home page with featured stocks and watchlist
       res.render('pages/home', { 
         featured_stocks, 
@@ -231,7 +231,7 @@ app.get('/home', auth, async (req, res) => {
         username: req.session.username
       });
     }
-  } 
+  }
   catch (error) {
     console.error('Error fetching data:', error);
     // Render the home page with empty data and an error message
