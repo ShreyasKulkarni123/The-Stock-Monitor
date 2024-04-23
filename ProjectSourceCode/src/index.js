@@ -302,86 +302,6 @@ app.get('/home', auth, async (req, res) => {
   }
 });
 
-app.get('/about', auth, async (req, res) => {
-  // Authentication Required
-  try {
-    //getting the ticker from the user that will be used to get all the information about it from the polygon API
-    const ticker = res.session.ticker;
-
-    //this will return the correct URL to plug into the API for the information about the ticker provided
-    let ticker_url = makeAboutTickerURL(ticker)
-
-    // using axios to call the api and Get details for a single ticker. This response will have detailed information about the ticker and the company behind it.
-    const response = await axios.get(ticker_url);
-
-    if (response.data && response.data.results) {
-      // Extracting ticker_details from the response data
-      const ticker_details = response.data.results;
-      res.render('pages/about', {
-        ticker_details: ticker_details,
-        username: req.session.username
-      });
-    }
-    else {
-      console.log('ticker given is invalid', error);
-      res.render('pages/home', {
-        message: 'ticker given is invalid',
-        username: req.session.username
-      });
-    }
-
-  }
-  catch (error) {
-    // Handle errors
-    console.log('error: ', error);
-    res.render('pages/home', {
-      message: 'Ticker given is invalid',
-      username: req.session.username
-    });
-  }
-});
-
-app.post('/add-to-watchlist_from_about', (req, res) => {
-  const ticker = req.body.ticker;
-  const userID = req.session.user_id;
-  res.session.ticker = ticker;
-  res.session.save();
-  db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
-    .then(reload => {
-      res.redirect('/about');
-    })
-    .catch(err => {
-      res.redirect('/about');
-    });
-});
-
-app.post('/add-to-watchlist_from_home', (req, res) => {
-  const ticker = req.body.ticker;
-  const userID = req.session.user_id;
-  const previous_page = req.body.current_page;
-  db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
-    .then(reload => {
-      res.redirect(previous_page);
-    })
-    .catch(err => {
-      res.redirect(previous_page);
-    });
-});
-
-app.post('/remove-from-watchlist', (req, res) => {
-  const ticker = req.body.ticker;
-  const userID = req.session.user_id;
-  const previous_page = req.body.current_page;
-  db.none('DELETE FROM watchlist WHERE user_id = $1 AND symbol = $2;', [userID, ticker])
-    .then(() => {
-      res.redirect(previous_page); // Redirects back to the previous page after successful deletion
-    })
-    .catch(err => {
-      console.error('Error removing from watchlist:', err);
-      res.redirect(previous_page); // Redirects back if there is an error during the deletion
-    });
-
-});
 
 //API to load news page
 app.get('/news', auth, (req, res) => {
@@ -472,6 +392,87 @@ app.get('/logout', (req, res) => {
   else {
     res.redirect('/login')
   }
+});
+
+//Watchlist functionality
+
+app.get('/about', auth, async (req, res) => {
+  // Authentication Required
+  try {
+    //getting the ticker from the user that will be used to get all the information about it from the polygon API
+    const ticker = res.session.ticker;
+
+    //this will return the correct URL to plug into the API for the information about the ticker provided
+    let ticker_url = makeAboutTickerURL(ticker)
+
+    // using axios to call the api and Get details for a single ticker. This response will have detailed information about the ticker and the company behind it.
+    const response = await axios.get(ticker_url);
+
+    if (response.data && response.data.results) {
+      // Extracting ticker_details from the response data
+      const ticker_details = response.data.results;
+      res.render('pages/about', {
+        ticker_details: ticker_details,
+        username: req.session.username
+      });
+    }
+    else {
+      console.log('ticker given is invalid', error);
+      res.render('pages/home', {
+        message: 'ticker given is invalid',
+        username: req.session.username
+      });
+    }
+
+  }
+  catch (error) {
+    // Handle errors
+    console.log('error: ', error);
+    res.render('pages/home', {
+      message: 'Ticker given is invalid',
+      username: req.session.username
+    });
+  }
+});
+
+app.post('/add-to-watchlist-from-about', (req, res) => {
+  res.session.ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  res.session.save();
+  db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
+    .then(reload => {
+      res.redirect('/about');
+    })
+    .catch(err => {
+      res.redirect('/about');
+    });
+});
+
+app.post('/add-to-watchlist-from-home', (req, res) => {
+  const ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  const previous_page = req.body.current_page;
+  db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
+    .then(reload => {
+      res.redirect(previous_page);
+    })
+    .catch(err => {
+      res.redirect(previous_page);
+    });
+});
+
+app.post('/remove-from-watchlist', (req, res) => {
+  const ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  const previous_page = req.body.current_page;
+  db.none('DELETE FROM watchlist WHERE user_id = $1 AND symbol = $2;', [userID, ticker])
+    .then(() => {
+      res.redirect(previous_page); // Redirects back to the previous page after successful deletion
+    })
+    .catch(err => {
+      console.error('Error removing from watchlist:', err);
+      res.redirect(previous_page); // Redirects back if there is an error during the deletion
+    });
 });
 
 // *****************************************************
