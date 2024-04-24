@@ -244,6 +244,36 @@ app.get('/home', auth, async (req, res) => {
   }
 });
 
+//Watchlist 
+
+app.post('/add-to-watchlist-from-home', (req, res) => {
+  const ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  const previous_page = req.body.current_page;
+  db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, ticker])
+    .then(reload => {
+      res.redirect(previous_page);
+    })
+    .catch(err => {
+      res.redirect(previous_page);
+    });
+});
+
+app.post('/remove-from-watchlist', (req, res) => {
+  const ticker = req.body.ticker;
+  const userID = req.session.user_id;
+  const previous_page = req.body.current_page;
+  db.none('DELETE FROM watchlist WHERE user_id = $1 AND symbol = $2;', [userID, ticker])
+    .then(() => {
+      res.redirect(previous_page); // Redirects back to the previous page after successful deletion
+    })
+    .catch(err => {
+      console.error('Error removing from watchlist:', err);
+      res.redirect(previous_page); // Redirects back if there is an error during the deletion
+    });
+});
+
+
 //API to load news page
 app.get('/news', auth, (req, res) => {
 
