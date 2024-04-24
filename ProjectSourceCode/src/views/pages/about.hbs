@@ -7,7 +7,7 @@
             <div class="mb-4">
                 <p>{{ ticker_details.description }}</p>
                 <p>Address: {{ ticker_details.address.address1 }}, {{ ticker_details.address.city }}, {{ ticker_details.address.state }}, {{ ticker_details.address.postal_code }}</p>
-                <p>Website: <a href="{{ ticker_details.homepage_url }}">{{ ticker_details.homepage_url }}</a></p>
+                <p>Website: <a target="_blank" href="{{ ticker_details.homepage_url }}">{{ ticker_details.homepage_url }}</a></p>
                 <p>Market Cap: ${{ ticker_details.market_cap }}</p>
                 <p>Industry: {{ ticker_details.sic_description }}</p>
                 {{!-- if you modify this line, please fix resources/js/script.js --}}
