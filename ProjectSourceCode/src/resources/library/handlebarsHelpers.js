@@ -34,6 +34,11 @@ Handlebars.registerHelper('chunk', function(array, size, options) {
     return results.join('');
   });
 
+  // Define a custom Handlebars helper to check if the index is even
+Handlebars.registerHelper('isEven', function(index) {
+    return index % 2 === 0;
+  });
+
 /////////////////    HELPER FUNCTIONS END   ////////////////////////////////////////////
 
 

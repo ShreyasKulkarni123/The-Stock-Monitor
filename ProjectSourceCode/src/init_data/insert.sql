@@ -6,15 +6,6 @@ INSERT INTO Users (username, password, balance) VALUES
   ('charlie', 'password3', 1500),
   ('david', 'password4', 200);
 
-
-INSERT INTO Stocks (symbol, search_keyword) 
-VALUES 
-  ('AAPL', 'Apple'),
-  ('MSFT', 'Microsoft'),
-  ('GOOG', 'Google'),
-  ('AMZN', 'Amazon'),
-  ('FB', 'Facebook');
-
 INSERT INTO watchlist (user_id, symbol) VALUES
 (3, 'AAPL'),
 (3, 'MSFT'),

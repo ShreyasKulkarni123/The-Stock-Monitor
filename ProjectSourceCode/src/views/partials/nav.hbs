@@ -24,47 +24,15 @@
         {{/if}}
       </div>
       <div class="ml-auto">
-        {{!-- icon/right side --}}
-        <img src="../../resources/img/logo.png" alt="Webpage icon" height = "10" width = "10">
-      </div>
-      
-
-      <!-- Scrolling stocks -->
-    <div class="col-md-5">
-        <div class="card mb-1">
-            <div class="card-body">
-                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        {{#each scrolling_stocks}}
-                        <div class="carousel-item {{#if @first}}active{{/if}}">
-                            <div class="row">
-                                {{#chunk this 3}}
-                                <div class="col-md-4">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h3 class="card-title">{{this.T}} : ${{this.c}}</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{/chunk}}
-                            </div>
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-      <div class = "col-sm-1">
         {{!-- search bar --}}
-        <form class="form-inline">
-          <div>
-            <input class="form-control mr-sm-4" type="search" placeholder="Search" aria-label="Search">
-          </div>
-          <div>
-            <button class="btn btn-outline-light my-2 my-md-2" type="submit">Search</button>
+        <form method="POST" action="/about" class="form-inline">
+          <div class="row">
+            <div class="col">
+              <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="ticker">
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+            </div>
           </div>
         </form>
       </div>

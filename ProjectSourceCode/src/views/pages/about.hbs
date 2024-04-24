@@ -1,3 +1,4 @@
+{{> message}}
 <div class="container py-4">
     <!-- Title -->
     <div class="row">
@@ -11,6 +12,10 @@
                 <p>Industry: {{ ticker_details.sic_description }}</p>
                 <p>Ticker: {{ ticker_details.ticker }}</p>
                 <p>Total Employees: {{ ticker_details.total_employees }}</p>
+                <form action="/add-to-watchlist-from-about" method="POST">
+                    <input type="hidden" name="ticker" value="{{ticker_details.ticker}}">
+                    <button type="submit" class="btn btn-success">Favorite</button>
+                </form>
             </div>
         </div>
     </div>
