@@ -7,13 +7,13 @@
         {{#each NewsArticle}}
         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
             <div class="card h-100 p-3">
-                <img src="{{ image_url }}" class="card-img-top" alt="{{ title }}">
+                <img src="{{ this.image_url }}" class="card-img-top" alt="{{ title }}">
                 <div class="card-body">
-                    <h5 class="card-title">{{ title }}</h5>
-                    <p class="card-text">{{ truncate description 150 }}...</p>
+                    <h5 class="card-title">{{ this.title }}</h5>
+                    <p class="card-text">{{ truncate this.description 150 }}...</p>
                     <p class="card-text">Author: {{ author }}</p>
-                    <p class="card-text">Date Published (MST): {{ convertToMST published_utc }}</p>
-                    <a class="card-text" target="_blank" href="{{ article_url }}">Read more</a>
+                    <p class="card-text">Date Published (MST): {{ convertToMST this.published_utc }}</p>
+                    <a class="card-text" target="_blank" href="{{ this.article_url }}">Read more</a>
                 </div>
             </div>
         </div>

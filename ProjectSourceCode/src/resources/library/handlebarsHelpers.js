@@ -8,11 +8,11 @@ const moment = require('moment-timezone'); // Import moment-timezone if you're u
 
 // Handlebars helper to truncate description text for news descriptions
 Handlebars.registerHelper('truncate', function(text, length) {
-    if (text.length > length) {
-      return text.substring(0, length);
+    if (!text || text.length <= length) {
+      return text;
     } 
     else {
-        return text;
+      return text.substring(0, length);
     }
 });
 
@@ -40,9 +40,3 @@ Handlebars.registerHelper('isEven', function(index) {
   });
 
 /////////////////    HELPER FUNCTIONS END   ////////////////////////////////////////////
-
-
-
-
-
-module.exports = Handlebars;
