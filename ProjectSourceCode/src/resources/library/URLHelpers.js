@@ -5,7 +5,7 @@ function makeAboutTickerURL(ticker)
 }
 function makeAggTickerURL(ticker, multiplier, timespan, from, to)
 {
-  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/'+ ticker + '/range/' + multiplier + '/' + timespan + '/' + from +'/' + to + '?adjusted=true&sort=asc&limit=50000&apiKey=' + process.env.API_KEY;
+  return ticker_url = 'https://api.polygon.io/v2/aggs/ticker/'+ ticker + '/range/' + multiplier + '/' + timespan + '/' + from +'/' + to + '?adjusted=true&sort=desc&limit=50000&apiKey=' + process.env.API_KEY;
 }
 
 module.exports = {

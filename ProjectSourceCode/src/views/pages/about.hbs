@@ -10,7 +10,9 @@
                 <p>Website: <a href="{{ ticker_details.homepage_url }}">{{ ticker_details.homepage_url }}</a></p>
                 <p>Market Cap: ${{ ticker_details.market_cap }}</p>
                 <p>Industry: {{ ticker_details.sic_description }}</p>
-                <p>Ticker: {{ ticker_details.ticker }}</p>
+                {{!-- if you modify this line, please fix resources/js/script.js --}}
+                {{!-- i.e. the line with document.getElementById('ticker') --}}
+                <p id="ticker">Ticker: {{ ticker_details.ticker }}</p>
                 <p>Total Employees: {{ ticker_details.total_employees }}</p>
                 <form action="/add-to-watchlist-from-about" method="POST">
                     <input type="hidden" name="ticker" value="{{ticker_details.ticker}}">
@@ -19,4 +21,9 @@
             </div>
         </div>
     </div>
+    <canvas id="myChart" style="width:80%"></canvas>
+    <div style="text-align: center; color: gray;">Date<br><br></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="/js/script.js"> </script>
 </div>

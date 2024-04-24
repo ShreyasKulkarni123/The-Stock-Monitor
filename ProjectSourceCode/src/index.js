@@ -470,9 +470,40 @@ app.get('/logout', (req, res) => {
   }
 });
 
+
+
+
+
+app.get('/graph-:ticker', async (req, res) => {
+  p = {
+    ticker: req.params.ticker,
+    mult: 10,
+    span: 'minute',
+    from: '1970-01-01', // the start of Unix time
+    to: findLastBusinessDay().toISOString().split('T')[0],
+  };
+
+  url = makeAggTickerURL(p.ticker, p.mult, p.span, p.from, p.to);
+
+  const response = await axios.get(url);
+      // resp = 0; 
+
+  if (response.data) {
+    res.json({ 
+      message: 'hi', 
+      params: p, 
+      res: response.data });
+  } else {
+    res.json({ error: true });
+  }
+});
+
 // *****************************************************
 // <!-- Section 6 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
+
+// for merge -- pls keep
+app.use(express.static(path.join(__dirname, "resources")));
 app.listen(3000);
 console.log('Server is listening on port 3000');
