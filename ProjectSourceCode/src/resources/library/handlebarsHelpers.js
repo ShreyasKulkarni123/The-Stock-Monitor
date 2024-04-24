@@ -26,6 +26,14 @@ Handlebars.registerHelper('convertToMST', function(utcDate) {
     return mstMoment.format('YYYY-MM-DD HH:mm:ss');
 });
 
+Handlebars.registerHelper('chunk', function(array, size, options) {
+    var results = [];
+    for (var i = 0; i < array.length; i += size) {
+        results.push(options.fn(array.slice(i, i + size)));
+    }
+    return results.join('');
+  });
+
 /////////////////    HELPER FUNCTIONS END   ////////////////////////////////////////////
 
 

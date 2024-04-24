@@ -97,11 +97,24 @@ const { makeAboutTickerURL, makeAggTickerURL } = require('./resources/library/UR
 // Importing helper date functions
 const { findLastBusinessDay, getHomeURL, getNewsURL } = require('./resources/library/findLastBusinessDay');
 
+// Define Handlebars helper function to split array into chunks
+
+
+let featured_stocks_global = [];
+
+
 // *****************************************************
 // <!-- Section 5 : API Routes -->
 // *****************************************************
 
 // TODO - Include your API routes here
+
+// Middleware to pass scrolling_stocks to all templates
+app.use((req, res, next) => {
+  // Pass scrolling_stocks to all templates
+  res.locals.scrolling_stocks = featured_stocks_global;
+  next();
+});
 
 //API default welcome test
 app.get('/welcome', (req, res) => {
@@ -213,6 +226,8 @@ app.get('/home', auth, async (req, res) => {
       const watchlist_stocks = watchlist.map(watchlist_item => {
         return featured_stocks.find(stock => stock.T === watchlist_item.symbol);
       }).filter(Boolean); // Filter out undefined values
+
+      featured_stocks_global = featured_stocks;
 
       // Render the home page with featured stocks and watchlist
       res.render('pages/home', { 

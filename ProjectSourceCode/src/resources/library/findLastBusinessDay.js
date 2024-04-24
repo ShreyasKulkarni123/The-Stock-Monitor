@@ -12,7 +12,7 @@ function findLastBusinessDay() {
         }
     }
     // Move back one more day to get the last business day
-    currentDate.setDate(currentDate.getDate() - 1);
+    currentDate.setDate(currentDate.getDate() - 2);
     return currentDate;
 }
 

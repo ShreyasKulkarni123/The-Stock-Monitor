@@ -29,32 +29,32 @@
       </div>
       
 
-      {{!-- Scrolling stocks --}}
-      <div class="col-md-5">
-    <div class="card mb-1">
-        <div class="card-body">
-            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {{#each scrolling_stocks}}
-                    <div class="carousel-item {{#if @first}}active{{/if}}">
-                        <div class="row">
-                            {{#each this.chunk 3}}
-                            <div class="col-md-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h3 class="card-title">{{this.T}} : ${{this.c}}</h3>
+      <!-- Scrolling stocks -->
+    <div class="col-md-5">
+        <div class="card mb-1">
+            <div class="card-body">
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {{#each scrolling_stocks}}
+                        <div class="carousel-item {{#if @first}}active{{/if}}">
+                            <div class="row">
+                                {{#chunk this 3}}
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h3 class="card-title">{{this.T}} : ${{this.c}}</h3>
+                                        </div>
                                     </div>
                                 </div>
+                                {{/chunk}}
                             </div>
-                            {{/each}}
                         </div>
+                        {{/each}}
                     </div>
-                    {{/each}}
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 
       <div class = "col-sm-1">
