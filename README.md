@@ -2,14 +2,16 @@
 
 The Stock Monitor is a financial tool for first-time investors. Track company news, stock prices, and information all in one place. [Check out the deployed version here](https://the-stock-monitor.onrender.com/).
 
-### Contributors: 
-#### Kevin White, Shreyas Kulkarni, Paul Drews, Aidan O'Connell, Andrew Lee
+### Contributors: Kevin White, Shreyas Kulkarni, Paul Drews, Aidan O'Connell, Andrew Lee
 
 ### Tech stack
 
 Backend: ExpressJS, PostgreSQL
+
 UI: Handlebars, Boostrap.js, [Chart.js](https://www.chartjs.org/)
+
 API used: [Polygon](https://polygon.io/)
+
 Deployed on: [Render](https://render.com/)
 
 ### How to run locally
