@@ -358,7 +358,7 @@ app.post('/add-to-watchlist-from-about', async (req, res) => {
 
   let watchlist_item_might_exist = await db.manyOrNone('SELECT * FROM watchlist WHERE symbol=($1)', [req.session.ticker]);
 
-  if(!watchlist_item_might_exist)
+  if(watchlist_item_might_exist.length == 0)
   {
     db.none('INSERT INTO watchlist (user_id, symbol) VALUES ($1, $2);', [userID, req.session.ticker])
     .then(reload => {
