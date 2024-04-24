@@ -23,6 +23,13 @@
                                                 <input type="hidden" name="ticker" value="{{this.stock_1.T}}">
                                                 <button type="submit" class="btn btn-success">Favorite</button>
                                             </form>
+                                            
+                                            <form method="POST" action="/about">
+                                                <!-- the input here is to push the ticker with the submition to the form (in order to load the about page). -->
+                                                <!-- This value can be accessed in the /about API as 'req.body.ticker' -->
+                                                <input type="hidden" name="ticker" value="{{this.stock_1.T}}">
+                                                <button class="btn btn-primary" type="submit">Details</button>
+                                            </form>
                                         </div>
                                     </div>
                                     <div class="card">
@@ -35,6 +42,13 @@
                                                 <input type="hidden" name="ticker" value="{{this.stock_2.T}}">
                                                 <button type="submit" class="btn btn-success">Favorite</button>
                                             </form>
+                                            
+                                            <form method="POST" action="/about">
+                                                <!-- the input here is to push the ticker with the submition to the form (in order to load the about page). -->
+                                                <!-- This value can be accessed in the /about API as 'req.body.ticker' -->
+                                                <input type="hidden" name="ticker" value="{{this.stock_2.T}}">
+                                                <button class="btn btn-primary" type="submit">Details</button>
+                                            </form>
                                         </div>
                                     </div>
                                     <div class="card">
@@ -46,6 +60,13 @@
                                                 <input type="hidden" name="current_page" value="home">
                                                 <input type="hidden" name="ticker" value="{{this.stock_3.T}}">
                                                 <button type="submit" class="btn btn-success">Favorite</button>
+                                            </form>
+                                            
+                                            <form method="POST" action="/about">
+                                                <!-- the input here is to push the ticker with the submition to the form (in order to load the about page). -->
+                                                <!-- This value can be accessed in the /about API as 'req.body.ticker' -->
+                                                <input type="hidden" name="ticker" value="{{this.stock_3.T}}">
+                                                <button class="btn btn-primary" type="submit">Details</button>
                                             </form>
                                         </div>
                                     </div>

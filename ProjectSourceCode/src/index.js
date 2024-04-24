@@ -416,7 +416,7 @@ app.post('/about', auth, async (req, res) => {
     let ticker = req.session.ticker;
 
     //this will return the correct URL to plug into the API for the information about the ticker provided
-    let ticker_url = makeAboutTickerURL(ticker)
+    let ticker_url = makeAboutTickerURL(ticker);  
 
     // using axios to call the api and Get details for a single ticker. This response will have detailed information about the ticker and the company behind it.
     const response = await axios.get(ticker_url);
